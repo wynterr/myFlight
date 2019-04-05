@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# @Author: 毅梅傲雪
+# @Date:   2019-04-05 15:08:16
+# @Last Modified by:   毅梅傲雪
+# @Last Modified time: 2019-04-05 16:01:55
+# -*- coding: utf-8 -*-
 # @Date    : 2019-03-28 12:00:11
 # @Author  : Your Name (you@example.org)
 # @Link    : http://example.org
@@ -14,8 +19,8 @@ import threading
 from queue import Queue
 from PIL import Image
 from lxml import etree
-from .headers import Headers
-from .myPrint import myPrint
+from headers import Headers
+from myPrint import myPrint
 class Spider():
     def __init__(self):
         self.base_url = "http://www.variflight.com"
@@ -35,6 +40,9 @@ class Spider():
         # 多线程获取图片的任务队列，队列中每一个元素是一个元组，元组内容即为 _get_img 函数的参数
         self.img_result_dict = dict()
         self.stop_get_imgs = False
+        self.lock = threading.Lock()
+        self.rec_time = 0
+        self.down_img_time = 0
     def _start_get_imgs(self,max_try_times=5):
         print("[A]爬取图片线程启动！")
         while not self.stop_get_imgs:
@@ -42,6 +50,7 @@ class Spider():
                 time.sleep(0.2)
             else:
                 mission = self.img_mission_queue.get()
+
                 threading.Thread(target=self._get_img,args=(mission,)).start()
     def __print_html(self,html):
         # 由于网页中经常含有某些特殊字符，无法用print显示，所以定义这个函数
@@ -59,6 +68,14 @@ class Spider():
             return list(map(lambda x:x.strip(),s))
         elif isinstance(s,str):
             return s.strip()
+    def __acc_down_time(self,delta):
+        if self.lock.acquire():
+            self.down_img_time += delta
+            self.lock.release()
+    def __acc_rec_time(self,delta):
+        if self.lock.acquire():
+            self.rec_time += delta
+            self.lock.release()
     def _get_img(self,arg_tuple):
         # 获取图片，顺便识别图片内容
         # 参数最多只能有四个，至少两个，使用时请严格按照以下顺序：imgurl, img_path, rec_it, headers
@@ -68,7 +85,11 @@ class Spider():
         rec_it = True if len(arg_tuple)==2 else arg_tuple[2]
         headers = None if len(arg_tuple)<4 else arg_tuple[3]
         try:
+            start1 = time.time()
             img = self.session.get(imgurl)
+            end1 = time.time()
+            print("线程 %s 获取图片用时："%threading.current_thread().getName(),end1-start1)
+            threading.Thread(target=self.__acc_down_time(end1-start1,)).start()
         except Exception as e:
             print("获取图片失败！")
             print(e)
@@ -79,9 +100,14 @@ class Spider():
                 img_path += '.png'
             with open(img_path,'wb') as f:
                 f.write(img.content)
-                # print("/*Thread %s*/[i]%s保存成功！"%(threading.current_thread().getName(),img_path))
+                # print("[i]%s保存成功！"%img_path)
             if rec_it:
+                start2 = time.time()
                 result = pytesseract.image_to_string(Image.open(img_path))
+                end2 = time.time()
+                print("线程 %s 识别图片用时："%threading.current_thread().getName(),end2-start2)
+                print("线程 %s 识别图片结果："%threading.current_thread().getName(),result)
+                threading.Thread(target=self.__acc_rec_time(end2-start2,)).start()
                 # print("识别到内容：",result)
                 self.img_result_dict.update({img_path:result})
             else:
@@ -222,10 +248,10 @@ class Spider():
                 flight_status=flight_status
                 ))
         print("[1]处理完成，等待图片获取完成...")
-        while threading.activeCount() > 3 or not self.img_mission_queue.empty():
-            #print('当前活跃线程数：',threading.activeCount())
-            #print('当前任务队列数：',self.img_mission_queue.qsize())
-            time.sleep(0.2)
+        while threading.activeCount() > 2 or not self.img_mission_queue.empty():
+            print('当前活跃线程数：',threading.activeCount())
+            print('当前任务队列数：',self.img_mission_queue.qsize())
+            time.sleep(0.08)
         self.stop_get_imgs = True
         for flight_info in flight_infos:
             for item in ('corp_imgpath','dep_time_act','arri_time_act','ontime_rate'):
@@ -453,10 +479,14 @@ class Spider():
             cabin_infos = cabin_infos
             )
 if __name__ == '__main__':
-    # myPrint(Spider().get_base_info('PEK','PVG','20190402'))
-    myPrint(Spider().get_base_info('CA911','20190329'))
+    start = time.time()
+    p = Spider()
+    #(p.get_base_info('PEK','PVG','20190402'))
+    (p.get_base_info('CA911','20190329'))
+    print(p.down_img_time)
+    print(p.rec_time)
+    print(time.time()-start)
     # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-CAN.html?AE71649A58c77"))
-
     # myPrint(Spider().get_detailed_info("http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"))
     # myPrint(Spider().get_detailed_info('http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190331'))
     # myPrint(Spider().get_detailed_info('BHY','PEK','CZ3147','20190331'))

@@ -1,3 +1,4 @@
 /.vscode
 errorlog
 /spider1
+/spider/img_file/*.png

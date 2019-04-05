@@ -17,7 +17,7 @@ def testSBFN():    #search by flight number
     body = {
         'op':1,
         'flightCode':'CA911',
-        'date':'20190328'
+        'date':'20190329'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -29,7 +29,7 @@ def testSBC():  #search by city
         'op':2,
         'cityFrom':'PEK',
         'cityTo':'ARN',
-        'date':'20190328'
+        'date':'20190329'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -38,5 +38,5 @@ def testSBC():  #search by city
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
-   testSBFN();
-   #testSBC()
+   #testSBFN();
+   testSBC()
