@@ -53,10 +53,44 @@ def searchByFlightNumber():
             )
         return json.dumps(flightData)
     except Exception as e:
-        raise(e)
         print('Error:',e)
-        return 'Error%s'%str(e)
-    return('111')
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/detailedInfo",methods = ['POST'])
+def getDetailedInfo():
+    try:
+        print(request.json)
+        data = request.json
+        date = data['date']
+        code = data['flightCode']
+        cityFrom = data['cityFrom']
+        cityTo = data['cityTo']
+        resData = Spider().get_detailed_info(cityFrom,cityTo,code,date)
+        return json.dumps(resData)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/comfortInfo",methods = ['POST'])
+def getComfortInfo():
+    try:
+        print(request.json)
+        data = request.json
+        date = data['date']
+        code = data['flightCode']
+        cityFrom = data['cityFrom']
+        cityTo = data['cityTo']
+        resData = Spider().get_detailed_info(code,cityFrom,cityTo,date)
+        return json.dumps(resData)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
 
 if (__name__ == '__main__'):
     app.run(host='0.0.0.0')

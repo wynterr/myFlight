@@ -481,8 +481,8 @@ class Spider():
 if __name__ == '__main__':
     start = time.time()
     p = Spider()
-    #(p.get_base_info('PEK','PVG','20190402'))
-    (p.get_base_info('CA911','20190329'))
+    (p.get_base_info('SHA','PEK','20190405'))
+    #(p.get_base_info('CA911','20190329'))
     print(p.down_img_time)
     print(p.rec_time)
     print(time.time()-start)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import pickle
 import json  
 import re
@@ -92,7 +93,11 @@ class Citiesoutbyarea(UpdateAirpData):
     def print_keys(self):
         print(self.Citiesoutbyarea.keys())
 if __name__ == '__main__':
-    # CountryCodes().print_keys()
-    CitiesData().print_keys()
-    CitiesinbyAZ().print_keys()
-    Citiesoutbyarea().print_keys()
+    with open('airports.txt','w') as f:
+        _console = sys.stdout
+        sys.stdout = f
+        #CountryCodes().print_keys()
+        CitiesData().printData()
+        #CitiesinbyAZ().print_keys()
+        #Citiesoutbyarea().print_keys()
+        sys.stdout = _console

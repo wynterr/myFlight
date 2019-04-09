@@ -34,18 +34,15 @@ class Spider():
         self.img_mission_queue = Queue()
         # 多线程获取图片的任务队列，队列中每一个元素是一个元组，元组内容即为 _get_img 函数的参数
         self.img_result_dict = dict()
-        self.down_img_thread_list = []
         self.stop_get_imgs = False
     def _start_get_imgs(self,max_try_times=5):
         print("[A]爬取图片线程启动！")
         while not self.stop_get_imgs:
-            if threading.activeCount() > 250 or self.img_mission_queue.empty():
+            if self.img_mission_queue.empty():
                 time.sleep(0.2)
             else:
                 mission = self.img_mission_queue.get()
-                t=threading.Thread(target=self._get_img,args=(mission,))
-                t.start()
-                self.down_img_thread_list.append(t)
+                threading.Thread(target=self._get_img,args=(mission,)).start()
     def __print_html(self,html):
         # 由于网页中经常含有某些特殊字符，无法用print显示，所以定义这个函数
         if isinstance(html,requests.models.Response):
@@ -77,12 +74,12 @@ class Spider():
             print(e)
             self.img_result_dict.update({img_path:None})
             return 
-        if sys.getsizeof(img.content) > 450:
+        if sys.getsizeof(img.content) > 500:
             if '.png' not in img_path:
                 img_path += '.png'
             with open(img_path,'wb') as f:
                 f.write(img.content)
-                # print("[i]%s保存成功！"%img_path)
+                # print("/*Thread %s*/[i]%s保存成功！"%(threading.current_thread().getName(),img_path))
             if rec_it:
                 result = pytesseract.image_to_string(Image.open(img_path))
                 # print("识别到内容：",result)
@@ -132,7 +129,7 @@ class Spider():
             return flight_infos
         print("[1]获取到网页！")
         # myPrint(headers)
-        #self.__print_html(ori_html.text)
+        # self.__print_html(html)
         if ori_html.status_code != 200:
             print("[1]网页返回状态码有误：",ori_html.status_code)
             return flight_infos
@@ -224,13 +221,12 @@ class Spider():
                 ontime_rate=ontime_rate,
                 flight_status=flight_status
                 ))
-        print("[1]处理完成，等待图片任务下发完成...")
-        while not self.img_mission_queue.empty():
-            time.sleep(0.1)
+        print("[1]处理完成，等待图片获取完成...")
+        while threading.activeCount() > 3 or not self.img_mission_queue.empty():
+            #print('当前活跃线程数：',threading.activeCount())
+            #print('当前任务队列数：',self.img_mission_queue.qsize())
+            time.sleep(0.2)
         self.stop_get_imgs = True
-        print("[1]图片任务下发完成，等待图片下载识别完成...")
-        for t in self.down_img_thread_list:
-            t.join()
         for flight_info in flight_infos:
             for item in ('corp_imgpath','dep_time_act','arri_time_act','ontime_rate'):
                 if flight_info[item] != '--':
@@ -268,7 +264,7 @@ class Spider():
         p = html.xpath('//div[@class="fly_main"]//img[contains(@src,"404")]')
         if p:
             print("[2]抱歉，没有查找到您需要的航班！")
-            # self.__print_html(html.text)
+            self.__print_html(html.text)
             return airp_datas
         # self.__print_html(html)
         corp_name_and_flight_code = html.xpath('//div[@class="tit"]/span/b/text()')[0].strip()
@@ -358,13 +354,12 @@ class Spider():
         # 对应天气
         for index,airp_name in enumerate(involved_airps):
             airp_datas[airp_name]['weather'] = airp_weathers[3*index:3*index+3]
-        print('[2]处理完成，等待图片任务下发完成...')
-        while not self.img_mission_queue.empty():
-            time.sleep(0.1)
+        print('[2]处理完成，等待图片获取完成...')
+        while threading.activeCount() > 2 or not self.img_mission_queue.empty():
+            # print('当前活跃线程数：',threading.activeCount())
+            # print('当前任务队列数：',self.img_mission_queue.qsize())
+            time.sleep(0.2)
         self.stop_get_imgs = True
-        print('[2]图片任务下发完成，等待图片获取识别完成...')
-        for t in self.down_img_thread_list:
-            t.join()
         # 获取图片内容
         for airp_name,airp_data in airp_datas.items():
             for item_name,item_data in airp_data.items():
@@ -458,8 +453,8 @@ class Spider():
             cabin_infos = cabin_infos
             )
 if __name__ == '__main__':
-    myPrint(Spider().get_base_info('SHA','PEK','20190405'))
-    #myPrint(Spider().get_base_info('CA911','20190329'))
+    # myPrint(Spider().get_base_info('PEK','PVG','20190402'))
+    myPrint(Spider().get_base_info('CA911','20190329'))
     # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-CAN.html?AE71649A58c77"))
 
     # myPrint(Spider().get_detailed_info("http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"))

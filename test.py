@@ -4,6 +4,8 @@ IP = '114.115.134.119'
 regUrl = 'http://' + IP + ':5000/beta/register';
 logUrl = 'http://' + IP + ':5000/beta/logIn';
 SBFNUrl = 'http://' + IP + ':5000/beta/byFlightNumber';
+DIUrl = 'http://' + IP + ':5000/beta/detailedInfo';
+CIUrl = 'http://' + IP + ':5000/beta/comfortInfo';
 
 def testReg():
     res = requests.post(regUrl);
@@ -28,15 +30,42 @@ def testSBC():  #search by city
     body = {
         'op':2,
         'cityFrom':'PEK',
-        'cityTo':'ARN',
-        'date':'20190329'
+        'cityTo':'SHA',
+        'date':'20190405'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
     print(data)
+
+def testDI():  #search for detailed imformation
+    body = {
+        'flightCode':'CA911',
+        'cityFrom':'PEK',
+        'cityTo':'ARN',
+        'date':'20190406'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = DIUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
+def testCI():  #search for comfort imformation
+    body = {
+        'flightCode':'CA911',
+        'cityFrom':'PEK',
+        'cityTo':'ARN',
+        'date':'20190406'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = CIUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
    #testSBFN();
-   testSBC()
+   #testSBC()
+   testDI();
+   #testCI();
