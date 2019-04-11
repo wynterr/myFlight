@@ -18,12 +18,13 @@ def testLog():
 def testSBFN():    #search by flight number
     body = {
         'op':1,
-        'flightCode':'CA911',
-        'date':'20190329'
+        'flightCode':'CA1234',
+        'date':'20190409'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
+    print(res.headers)
     print(data)
 
 def testSBC():  #search by city
@@ -62,10 +63,20 @@ def testCI():  #search for comfort imformation
     data = json.loads(res.text)
     print(data)
 
+def testDIBU():  #search for detailed imformation by url
+    body = {
+        'url':'http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = DIUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
    #testSBFN();
    #testSBC()
-   testDI();
+   #testDI();
    #testCI();
+   testDIBU();

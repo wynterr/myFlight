@@ -1,8 +1,11 @@
 from flask import Flask
 from flask import request
+from flask import make_response
 import json
 from spider.spider import Spider
+from flask_cors import *
 app = Flask(__name__)
+CORS(app, supports_credentials=True, resources=r'/*')
 
 @app.route("/")
 def hello():
@@ -16,7 +19,8 @@ def register():
 def logIn():
     return 'successfully loged in!'
 
-@app.route("/beta/byFlightNumber",methods = ['POST'])
+@app.route("/beta/byFlightNumber",methods = ['POST','OPTIONS'])
+@cross_origin()
 def searchByFlightNumber():
     try:
         print(request.json)
@@ -48,9 +52,11 @@ def searchByFlightNumber():
                     'arri_time_plan':thisRecord['arri_time_plan'],
                     'arri_time_act':thisRecord['arri_time_act'],
                     'arri_airp':thisRecord['arri_airp'],
-                    'flight_status':thisRecord['flight_status']
+                    'flight_status':thisRecord['flight_status'],
+                    'flight_detailed_info_url':thisRecord['flight_detailed_info_url']
                 }
             )
+        print(json.dumps(flightData))
         return json.dumps(flightData)
     except Exception as e:
         print('Error:',e)
@@ -58,16 +64,21 @@ def searchByFlightNumber():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
-@app.route("/beta/detailedInfo",methods = ['POST'])
+@app.route("/beta/detailedInfo",methods = ['POST','OPTIONS'])
+@cross_origin()
 def getDetailedInfo():
     try:
         print(request.json)
         data = request.json
-        date = data['date']
-        code = data['flightCode']
-        cityFrom = data['cityFrom']
-        cityTo = data['cityTo']
-        resData = Spider().get_detailed_info(cityFrom,cityTo,code,date)
+        if ('url' in data):
+            print(data['url'])
+            resData = Spider().get_detailed_info(data['url'])
+        else:
+            date = data['date']
+            code = data['flightCode']
+            cityFrom = data['cityFrom']
+            cityTo = data['cityTo']
+            resData = Spider().get_detailed_info(cityFrom,cityTo,code,date)
         return json.dumps(resData)
     except Exception as e:
         print('Error:',e)
@@ -75,7 +86,8 @@ def getDetailedInfo():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
-@app.route("/beta/comfortInfo",methods = ['POST'])
+@app.route("/beta/comfortInfo",methods = ['POST','OPTIONS'])
+@cross_origin()
 def getComfortInfo():
     try:
         print(request.json)

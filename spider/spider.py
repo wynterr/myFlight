@@ -132,7 +132,7 @@ class Spider():
             return flight_infos
         print("[1]获取到网页！")
         # myPrint(headers)
-        #self.__print_html(ori_html.text)
+        # self.__print_html(ori_html.text)
         if ori_html.status_code != 200:
             print("[1]网页返回状态码有误：",ori_html.status_code)
             return flight_infos
@@ -149,6 +149,7 @@ class Spider():
             sub_html = etree.HTML(flight_info)
 
             #---- 先获取文本信息 ----#
+            flight_detailed_info_url = self.base_url + sub_html.xpath('//li[@style="position: relative;"]/a[@class="searchlist_innerli"]/@href')[0]
             corp_name,flight_code = sub_html.xpath('//div[@class="li_com"]/span/b/a/@title')
             # print(corp_name,flight_code)
             shared_fligt = sub_html.xpath('//li[@style="position: relative;"]/a[@class="list_share"]/@title')
@@ -207,6 +208,7 @@ class Spider():
             else:
                 arri_time_act = '--'
             flight_infos.append(dict(
+                flight_detailed_info_url=flight_detailed_info_url,
                 corp_imgpath=corp_imgpath,
                 corp_name=corp_name,
                 flight_code=flight_code,
@@ -458,11 +460,11 @@ class Spider():
             cabin_infos = cabin_infos
             )
 if __name__ == '__main__':
-    myPrint(Spider().get_base_info('SHA','PEK','20190405'))
-    #myPrint(Spider().get_base_info('CA911','20190329'))
+    #myPrint(Spider().get_base_info('SHA','PEK','20190405'))
+    # myPrint(Spider().get_base_info('CA911','20190329'))
     # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-CAN.html?AE71649A58c77"))
-
-    # myPrint(Spider().get_detailed_info("http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"))
+    url1="http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"
+    myPrint(Spider().get_detailed_info(url1))
     # myPrint(Spider().get_detailed_info('http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190331'))
     # myPrint(Spider().get_detailed_info('BHY','PEK','CZ3147','20190331'))
     # myPrint(Spider().get_confort_info('http://happiness.variflight.com/search/airline?date=2019-04-04&dep=PEK&arr=CTU&type=1'))
