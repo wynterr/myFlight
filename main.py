@@ -4,20 +4,14 @@ from flask import make_response
 import json
 from spider.spider import Spider
 from flask_cors import *
+from connect import DataBase
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources=r'/*')
+db = DataBase();
 
 @app.route("/")
 def hello():
     return "Flight wherever you want!"
-
-@app.route("/beta/register",methods = ['POST'])
-def register():
-    return 'successfully registered!'
-
-@app.route("/beta/logIn",methods = ['POST'])
-def logIn():
-    return 'successfully loged in!'
 
 @app.route("/beta/byFlightNumber",methods = ['POST','OPTIONS'])
 @cross_origin()
@@ -103,6 +97,68 @@ def getComfortInfo():
         error = {}
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
+
+@app.route("/beta/register",methods = ['POST'])
+@cross_origin()
+def register():
+    try:
+        data = request.json
+        success = db.register(data['username'],data['password'],data['email'])
+        if (success == 0):
+            raise(Exception("Failed to register!"))
+        else:
+            msg = {}
+            msg['status'] = 'success!'
+            return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/login",methods = ['POST'])
+@cross_origin()
+def login():
+    try:
+        data = request.json
+        success = db.login(data['username'],data['password'])
+        msg = {}
+        msg['statusCode'] = success
+        if (success == 0):
+            msg['status'] = 'Wrong username or password!'
+            return json.dumps(msg)
+        elif (success == -1): 
+            msg['status'] = 'Account inactivated!'
+            return json.dumps(msg)
+        elif (success == 1):
+            msg['status'] = 'Success!'
+            return json.dumps(msg)
+        else:
+            msg['status'] = 'Unknown error!'
+            return json.dumps(msg)    
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/active/<username>/<token>")
+@cross_origin()
+def active(username,token):
+    try:
+        success = db.activate(username,token)
+        if (success == 0):
+            raise(Exception("Failed to activate!"))
+        else:
+            msg = {}
+            msg['status'] = 'success!'
+            return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
 
 if (__name__ == '__main__'):
     app.run(host='0.0.0.0')

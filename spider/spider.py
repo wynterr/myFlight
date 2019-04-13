@@ -253,7 +253,7 @@ class Spider():
         img_get_thread.start()
         self.stop_get_imgs = False
         query_url = self.detailed_info_baseurl%(args[0],args[1],args[2],args[3]) if len(args)>1 else args[0]
-        query_date = query_url[-8:] if 'fdate' in query_url else 'rand_'+str(ramdom.randint(1,99))
+        query_date = query_url[-8:] if 'fdate' in query_url else 'rand_'+str(random.randint(1,99))
         airp_datas = {}
         try:
             ori_html = self.session.get(query_url,headers = self.headers.get_headers(1))

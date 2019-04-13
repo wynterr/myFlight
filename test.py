@@ -6,14 +6,8 @@ logUrl = 'http://' + IP + ':5000/beta/logIn';
 SBFNUrl = 'http://' + IP + ':5000/beta/byFlightNumber';
 DIUrl = 'http://' + IP + ':5000/beta/detailedInfo';
 CIUrl = 'http://' + IP + ':5000/beta/comfortInfo';
-
-def testReg():
-    res = requests.post(regUrl);
-    print(res.text);
-
-def testLog():
-    res = requests.post(logUrl);
-    print(res.text);
+regUrl = 'http://' + IP + ':5000/beta/register';
+loginUrl = 'http://' + IP + ':5000/beta/login';
 
 def testSBFN():    #search by flight number
     body = {
@@ -72,6 +66,26 @@ def testDIBU():  #search for detailed imformation by url
     data = json.loads(res.text)
     print(data)
 
+def testReg():  #test register
+    body = {
+        'username' : 'testUser2',
+        'password' : '112233445',
+        'email' : '111111111@qq.com'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = regUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
+def testLogin():
+    body = {
+        'username' : 'testUser2',
+        'password' : '112233445'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = loginUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
@@ -79,4 +93,6 @@ if (__name__ == '__main__'):
    #testSBC()
    #testDI();
    #testCI();
-   testDIBU();
+   #testDIBU();
+   #testReg()
+   testLogin()
