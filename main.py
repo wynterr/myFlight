@@ -5,6 +5,8 @@ import json
 from spider.spider import Spider
 from flask_cors import *
 from connect import DataBase
+import time
+import datetime
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources=r'/*')
 db = DataBase();
@@ -121,7 +123,8 @@ def register():
 def login():
     try:
         data = request.json
-        success = db.login(data['username'],data['password'])
+        res = db.login(data['username'],data['password'])
+        success = res['status']
         msg = {}
         msg['statusCode'] = success
         if (success == 0):
@@ -132,6 +135,7 @@ def login():
             return json.dumps(msg)
         elif (success == 1):
             msg['status'] = 'Success!'
+            msg['token'] = res['code']
             return json.dumps(msg)
         else:
             msg['status'] = 'Unknown error!'
@@ -159,6 +163,94 @@ def active(username,token):
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
+@app.route("/beta/focus",methods = ['POST'])
+@cross_origin()
+def focus():
+    try:
+        data = request.json
+        logedIn = db.isLogedIn(data['username'],data['token'])
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            success = db.focus(data['username'],data['flightCode'],data['date'])
+            if (success == 0):
+                raise(Exception("Error occured when focusing the flight!"))
+            else:
+                msg = {}
+                msg['status'] = 'success!'
+                return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/unfocus",methods = ['POST'])
+@cross_origin()
+def unfocus():
+    try:
+        data = request.json
+        logedIn = db.isLogedIn(data['username'],data['token'])
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            success = db.unfocus(data['username'],data['flightCode'],data['date'])
+            if (success == 0):
+                raise(Exception("Error occured when unfocusing the flight!"))
+            else:
+                msg = {}
+                msg['status'] = 'success!'
+                return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/getFocusedFlights",methods = ['POST'])
+@cross_origin()
+def getFocusedFlights():
+    try:
+        data = request.json
+        logedIn = db.isLogedIn(data['username'],data['token'])
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            flights = db.getList(data['username'])
+            for i in range(len(flights)):
+                dic = {}
+                dic['flightCode'] = flights[i][0]
+                dic['date'] = flights[i][1].strftime("%Y%m%d")
+                flights[i] = dic
+            print(flights)
+            return json.dumps(flights)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/logout",methods = ['POST'])
+@cross_origin()
+def logout():
+    try:
+        data = request.json
+        logedIn = db.isLogedIn(data['username'],data['token'])
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            success = db.logout(data['username'],data['token'])
+            if (success == 0):
+                raise(Exception("Error occured when logging out!"))
+            else:
+                msg = {}
+                msg['status'] = 'success!'
+                return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
 
 if (__name__ == '__main__'):
     app.run(host='0.0.0.0')

@@ -214,12 +214,12 @@ class Spider():
                 flight_code=flight_code,
                 shared_fligt=shared_fligt,
                 dep_time_plan=dep_time_plan,
-                dep_time_act=min(dep_time_act,arri_time_act),
+                dep_time_act=dep_time_act,
                 local_dep_date_plan=local_dep_date_plan[0] if local_dep_date_plan else None,
                 local_dep_date_act=local_dep_date_act[0] if local_dep_date_act else None,
                 dep_airp=dep_airp,
                 arri_time_plan=arri_time_plan,
-                arri_time_act=max(dep_time_act,arri_time_act),
+                arri_time_act=arri_time_act,
                 local_arri_date_plan=local_arri_date_plan[0] if local_arri_date_plan else None,
                 local_arri_date_act=local_arri_date_act[0] if local_arri_date_act else None,
                 arri_airp=arri_airp,
@@ -461,10 +461,10 @@ class Spider():
             )
 if __name__ == '__main__':
     #myPrint(Spider().get_base_info('SHA','PEK','20190405'))
-    # myPrint(Spider().get_base_info('CA911','20190329'))
+    myPrint(Spider().get_base_info('CA1234','20190413'))
     # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-CAN.html?AE71649A58c77"))
-    url1="http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"
-    myPrint(Spider().get_detailed_info(url1))
+    #url1="http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402"
+    #myPrint(Spider().get_detailed_info(url1))
     # myPrint(Spider().get_detailed_info('http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190331'))
     # myPrint(Spider().get_detailed_info('BHY','PEK','CZ3147','20190331'))
     # myPrint(Spider().get_confort_info('http://happiness.variflight.com/search/airline?date=2019-04-04&dep=PEK&arr=CTU&type=1'))

@@ -1,25 +1,26 @@
 import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-# import init
-userID = "yanhui2"
-pwd1 = "123456"
-email = "1129720379@qq.com"
-
-username = 'buaamyflight@163.com'
-pwd = '2019flight'
-msg = MIMEText( 'abc', 'txt', 'utf-8' )
-msg['Subject'] = Header( '2345', 'utf-8' )
-msg['From'] = "flight<buaamyflight@163.com>"
-msg['To'] = "yanhui<1129720379@qq.com>"
-receive = [email,username]
+import email.mime.multipart
+import email.mime.text
+ 
+msg = email.mime.multipart.MIMEMultipart()
+'''
+最后终于还是找到解决办法了：邮件主题为‘test’的时候就会出现错误，换成其他词就好了。。我也不知道这是什么奇葩的原因
+'''
+msg['Subject'] = 'duanx'
+msg['From'] = 'buaamyflight@163.com'
+msg['To'] = '786311041@qq.com'
+content = '''''
+    你好，xiaoming
+            这是一封自动发送的邮件。
+        www.ustchacker.com
+'''
+txt = email.mime.text.MIMEText(content)
+msg.attach(txt)
+ 
+#smtp = smtplib
 smtp = smtplib.SMTP()
-smtp.connect('smtp.163.com','25')
-#smtp.set_debuglevel(1)
-smtp.login(username,pwd)  #username  ,pwd
-try:
-
-    smtp.sendmail(username,receive,msg.as_string())
-except Exception as e:
-    print(e)
+smtp.connect('smtp.163.com', '25')
+smtp.login('buaamyflight@163.com', '2019flight')
+smtp.sendmail('buaamyflight@163.com', '786311041@qq.com', msg.as_string())
 smtp.quit()
+print('邮件发送成功email has send out !')

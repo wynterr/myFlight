@@ -8,12 +8,15 @@ DIUrl = 'http://' + IP + ':5000/beta/detailedInfo';
 CIUrl = 'http://' + IP + ':5000/beta/comfortInfo';
 regUrl = 'http://' + IP + ':5000/beta/register';
 loginUrl = 'http://' + IP + ':5000/beta/login';
+focusUrl = 'http://' + IP + ':5000/beta/focus';
+unfocusUrl = 'http://' + IP + ':5000/beta/unfocus';
+listUrl = 'http://' + IP + ':5000/beta/getFocusedFlights';
 
 def testSBFN():    #search by flight number
     body = {
         'op':1,
         'flightCode':'CA1234',
-        'date':'20190409'
+        'date':'20190413'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -59,7 +62,7 @@ def testCI():  #search for comfort imformation
 
 def testDIBU():  #search for detailed imformation by url
     body = {
-        'url':'http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190402'
+        'url':'http://www.variflight.com/schedule/KRY-PEK-CA1234.html?AE71649A58c77=&fdate='
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = DIUrl,headers = headers,data = json.dumps(body));
@@ -68,8 +71,8 @@ def testDIBU():  #search for detailed imformation by url
 
 def testReg():  #test register
     body = {
-        'username' : 'testUser2',
-        'password' : '112233445',
+        'username' : 'testUser',
+        'password' : '11223344',
         'email' : '111111111@qq.com'
     }
     headers = {'content-type': "application/json"}
@@ -79,13 +82,48 @@ def testReg():  #test register
 
 def testLogin():
     body = {
-        'username' : 'testUser2',
-        'password' : '112233445'
+        'username' : 'testUser',
+        'password' : '11223344'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = loginUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
     print(data)
+
+def testFocus():
+    body = {
+        'username' : 'testUser',
+        'token' : 'lgqJrGxZt6',
+        'flightCode':'CA1234',
+        'date':'20190414'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = focusUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
+def testUnfocus():
+    body = {
+        'username' : 'testUser',
+        'token' : 'lgqJrGxZt6',
+        'flightCode':'CA1234',
+        'date':'20190414'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = unfocusUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
+def testGetList():
+    body = {
+        'username' : 'testUser',
+        'token' : 'lgqJrGxZt6'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = listUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
@@ -95,4 +133,7 @@ if (__name__ == '__main__'):
    #testCI();
    #testDIBU();
    #testReg()
-   testLogin()
+   #testLogin()
+   #testFocus()
+    #testGetList()
+    testUnfocus()

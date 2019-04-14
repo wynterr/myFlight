@@ -17,6 +17,11 @@ def createTable(cur):
 	primary key(userID, flightID,date),\
 	foreign key(userID) references userMessage(userID)\
  )"
+    #状态码表
+    sql4 = "create table state(\
+	userID varchar(50) not null,\
+	s_code varchar(50) not null\
+)"
 
     '''''#机场表
     sql4= "create table airports(\
@@ -37,10 +42,12 @@ def createTable(cur):
     primary key(flightCode,date)\
 )"'''
     try:
-        cur.execute(sql1)
+        #cur.execute(sql1)
         print("success to create user table")
-        cur.execute(sql3)
+        #cur.execute(sql3)
         print("success to create map table")
+        cur.execute(sql4)
+        print("success to create state table")
         '''''
         cur.execute(sql2)
         print("success to create flight table")
