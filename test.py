@@ -29,7 +29,7 @@ def testSBC():  #search by city
         'op':2,
         'cityFrom':'PEK',
         'cityTo':'SHA',
-        'date':'20190405'
+        'date':'20190415'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -128,7 +128,7 @@ if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
    #testSBFN();
-   #testSBC()
+   testSBC()
    #testDI();
    #testCI();
    #testDIBU();
@@ -136,4 +136,4 @@ if (__name__ == '__main__'):
    #testLogin()
    #testFocus()
     #testGetList()
-    testUnfocus()
+    #testUnfocus()

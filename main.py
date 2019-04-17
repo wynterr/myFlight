@@ -7,9 +7,23 @@ from flask_cors import *
 from connect import DataBase
 import time
 import datetime
+import threading
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources=r'/*')
-db = DataBase();
+db = DataBase()
+logNum = 0
+lk = threading.RLock()
+
+def mklog(num,msg):
+    pass
+
+def getnum():
+    global logNum
+    lk.acquire()
+    logNum = logNum + 1
+    num = logNum
+    lk.release()
+    return num
 
 @app.route("/")
 def hello():
@@ -19,7 +33,7 @@ def hello():
 @cross_origin()
 def searchByFlightNumber():
     try:
-        print(request.json)
+        print("byFlightNumber",request.json)
         data = request.json
         date = data['date']
         if (data['op'] == 1):
@@ -49,10 +63,11 @@ def searchByFlightNumber():
                     'arri_time_act':thisRecord['arri_time_act'],
                     'arri_airp':thisRecord['arri_airp'],
                     'flight_status':thisRecord['flight_status'],
-                    'flight_detailed_info_url':thisRecord['flight_detailed_info_url']
+                    'flight_detailed_info_url':thisRecord['flight_detailed_info_url'],
+                    'ontime_rate':thisRecord['ontime_rate']
                 }
             )
-        print(json.dumps(flightData))
+        print("Get flight data:",json.dumps(flightData))
         return json.dumps(flightData)
     except Exception as e:
         print('Error:',e)
@@ -64,10 +79,9 @@ def searchByFlightNumber():
 @cross_origin()
 def getDetailedInfo():
     try:
-        print(request.json)
+        print("detailedInfo",request.json)
         data = request.json
         if ('url' in data):
-            print(data['url'])
             resData = Spider().get_detailed_info(data['url'])
         else:
             date = data['date']
@@ -86,7 +100,7 @@ def getDetailedInfo():
 @cross_origin()
 def getComfortInfo():
     try:
-        print(request.json)
+        print("comfortInfo",request.json)
         data = request.json
         date = data['date']
         code = data['flightCode']
@@ -104,6 +118,7 @@ def getComfortInfo():
 @cross_origin()
 def register():
     try:
+        print("register",request.json)
         data = request.json
         success = db.register(data['username'],data['password'],data['email'])
         if (success == 0):
@@ -122,6 +137,7 @@ def register():
 @cross_origin()
 def login():
     try:
+        print("login",request.json)
         data = request.json
         res = db.login(data['username'],data['password'])
         success = res['status']
@@ -167,6 +183,7 @@ def active(username,token):
 @cross_origin()
 def focus():
     try:
+        print("focus",request.json)
         data = request.json
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
@@ -189,6 +206,7 @@ def focus():
 @cross_origin()
 def unfocus():
     try:
+        print("unfocus",request.json)
         data = request.json
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
@@ -211,6 +229,7 @@ def unfocus():
 @cross_origin()
 def getFocusedFlights():
     try:
+        print("getFocusedFlights",request.json)
         data = request.json
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
@@ -234,6 +253,7 @@ def getFocusedFlights():
 @cross_origin()
 def logout():
     try:
+        print("logout",request.json)
         data = request.json
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):

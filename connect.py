@@ -58,7 +58,7 @@ class DataBase:
                 msg['From'] = formataddr(["flight", self.sender])
                 msg['To'] = formataddr(["client", email])
                 #print("com")
-                print(activateCode)
+                print("activate url:",activateCode)
                 #self.smtp.sendmail(self.sender, email, msg.as_string())  # 发送邮件
                 #print("aa")
             except Exception as e:
@@ -96,12 +96,14 @@ class DataBase:
         ret['status'] = 0
         try:
             res = [userID, pwd]
+            print("before")
             self.cur.execute(sql, res)
+            print("after")
             count = self.cur.fetchone()
             if (count is None):
                 print("密码错误")
                 return ret
-            print(int.from_bytes(count[0], byteorder="big"))
+            print("Activate records find:",int.from_bytes(count[0], byteorder="big"))
             if (int.from_bytes(count[0], byteorder="big") == 1):
                 print("密码正确且账号已激活")
                 stateCode = ''.join(random.sample(self.codeSource, 10))

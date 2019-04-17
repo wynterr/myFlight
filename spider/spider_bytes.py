@@ -11,26 +11,11 @@ import requests
 import pytesseract
 import random
 import threading
-import logging
 from queue import Queue
 from PIL import Image
 from lxml import etree
-from .headers import Headers
-from .myPrint import myPrint
-
-logger = logging.getLogger("Spider")
-logging.basicConfig(level=logging.INFO,
-                format='[%(levelname)-7s] %(asctime)s %(filename)s[line:%(lineno)d] %(message)s',
-                datefmt='%Y-%m-%d, %H:%M:%S ',
-                filename='./log/spider_run_log.log',
-                filemode='a')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('[%(levelname)-8s] %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
-# 最后一句指明了只输出本文件内的logging信息
-
+from headers import Headers
+from myPrint import myPrint
 class Spider():
     def __init__(self):
         self.base_url = "http://www.variflight.com"
@@ -54,7 +39,7 @@ class Spider():
     def _start_get_imgs(self,max_try_times=5):
         print("[A]爬取图片线程启动！")
         while not self.stop_get_imgs:
-            if threading.activeCount() > 200 or self.img_mission_queue.empty():
+            if threading.activeCount() > 250 or self.img_mission_queue.empty():
                 time.sleep(0.2)
             else:
                 mission = self.img_mission_queue.get()
@@ -88,37 +73,29 @@ class Spider():
         try:
             img = self.session.get(imgurl)
         except Exception as e:
-            logger.warning("获取图片失败: %s"%e)
-            self.img_result_dict.update({img_path:'--'})
-            return 
-        if img.status_code != 200:
-            logger.warning("图片返回状态码有误，返回状态码: %s"%img.status_code)
-            self.img_result_dict.update({img_path:'--'})
+            print("获取图片失败！")
+            print(e)
+            self.img_result_dict.update({img_path:'[Error!]'})
             return 
         if img.headers['Content-Type'] == 'image/png':
             with open(img_path,'wb') as f:
                 f.write(img.content)
                 # print("[i]%s保存成功！"%img_path)
             if return_type:
-                try:
-                    result = pytesseract.image_to_string(Image.open(img_path))
-                    if result:
-                        self.img_result_dict.update({img_path:result})
-                    else:
-                        logger.warning("识别到的内容为空，图片路径为：%s"%img_path)
-                        self.img_result_dict.update({img_path:'--'})
-                except:
-                    logger.debug("图片 %s 识别失败！"%img_path)
-                    self.img_result_dict.update({img_path:'--'})
+                result = pytesseract.image_to_string(Image.open(img_path))
                 # print("识别到内容：",result)
+                if return_type==1:
+                    self.img_result_dict.update({img_path:result})
+                else:
+                    self.img_result_dict.update({img_path:(result,img.content)})
             else:
                 self.img_result_dict.update({img_path:img.content})
         else:
-            logger.warning("响应头表示这不是一个图片文件！")
-            logger.warning("图片标题为: %s"%img_path)
-            logger.warning("图片 url 为：%s"%imgurl)
-            logger.warning("获取到的内容为：%s"%img.text)
-            self.img_result_dict.update({img_path:'--'})
+            print("获取图片内容有误！")
+            print("图片标题为",img_path)
+            print("图片 url 为：%s"%imgurl)
+            print("获取到的内容为：%s"%img.text)
+            self.img_result_dict.update({img_path:'[Error!]'})
     def get_base_info(self,*args):
         '''
         获取航班的基本信息
@@ -137,39 +114,35 @@ class Spider():
             # 按路线查询
             query_url = self.query_by_route_baseurl%(args[0],args[1],args[2])
         else:
-            logger.error("输入的参数有误，函数已报错！")
             raise ValueError("输入的参数有误！")
 
-        query_date = args[-1] if len(args)>1 else 'rand_'+str(random.randint(1,99))
+        query_date = args[-1] if len(args)>1 else 'rand_'+str(ramdom.randint(1,99))
         # 如果是按url查询则日期为随机数
         flight_infos = []
         try:
             ori_html = self.session.get(query_url,headers = headers,timeout = 5)
         except Exception as e:
-            logger.error("获取 url 为 %s 时出现错误，已返回空字典，错误原因为 %s"%(query_url,e))
+            print("[1]网页获取出现错误！")
+            print("[1]网页 url：",query_url)
+            print("[1]错误原因：",e)
             return flight_infos
         print("[1]获取到网页！")
         # myPrint(headers)
         # self.__print_html(ori_html.text)
         if ori_html.status_code != 200:
-            logger.error("获取到的 url 为 %s 的网页响应状态码有误：%s"%(query_url,ori_html.status_code))
+            print("[1]网页返回状态码有误：",ori_html.status_code)
             return flight_infos
         html = etree.HTML(ori_html.text)
-        if '抱歉，没有找到您输入的航班信息' in ori_html.text:
-            logger.info("没有查找到相应的航班，查询条件： %s"%args)
+        p = html.xpath('//div[@class="fly_main"]//img[contains(@src,"404")]')
+        if p:
+            print("[1]抱歉，没有查找到您需要的航班！")
             print(ori_html.text)
             return flight_infos
 
         img_get_thread = threading.Thread(target=self._start_get_imgs)
         img_get_thread.start()
         self.stop_get_imgs = False
-        # print(ori_html.text)
-        try:
-            query_result = re.search(r'<div class="fly_list">(.+?)</div>',ori_html.text,re.S).group(0)
-        except AttributeError:
-            logger.warning("似乎拿到的网页不对？？？")
-            self.stop_get_imgs = True
-            return flight_infos
+        query_result = re.search(r'<div class="fly_list">(.+?)</div>',ori_html.text,re.S).group(0)
         query_result = re.findall(r'<li style="position: relative;">.+?</li>',ori_html.text,re.S)
         # 各个航班信息的html代码块文本组成的列表，每个元素是一个航班的代码块
         for index,flight_info in enumerate(query_result):
@@ -217,7 +190,7 @@ class Spider():
             corp_img = corp_imgpath
             # 准点率
             ontime_rate_imgpath = "./spider/img_file/%s_%s-%s_%s_onTimeRate.png"%(flight_code,dep_airp,arri_airp,query_date)
-            if ontime_rate_imgurl :
+            if ontime_rate_imgurl:
                 self.img_mission_queue.put((ontime_rate_imgurl,ontime_rate_imgpath,1))
                 ontime_rate = ontime_rate_imgpath
             else:
@@ -238,19 +211,20 @@ class Spider():
                 arri_time_act = '--'
             flight_infos.append(dict(
                 flight_detailed_info_url=flight_detailed_info_url,
+                corp_img=corp_imgpath,
                 corp_name=corp_name,
                 flight_code=flight_code,
                 shared_fligt=shared_fligt,
                 dep_time_plan=dep_time_plan,
                 dep_time_act=dep_time_act,
-                local_dep_date_plan=local_dep_date_plan[0] if local_dep_date_plan else '--',
-                local_dep_date_act=local_dep_date_act[0] if local_dep_date_act else '--',
+                local_dep_date_plan=local_dep_date_plan[0] if local_dep_date_plan else None,
+                local_dep_date_act=local_dep_date_act[0] if local_dep_date_act else None,
                 dep_airp=dep_airp,
                 dep_airp_code=dep_airp_code,
                 arri_time_plan=arri_time_plan,
                 arri_time_act=arri_time_act,
-                local_arri_date_plan=local_arri_date_plan[0] if local_arri_date_plan else '--',
-                local_arri_date_act=local_arri_date_act[0] if local_arri_date_act else '--',
+                local_arri_date_plan=local_arri_date_plan[0] if local_arri_date_plan else None,
+                local_arri_date_act=local_arri_date_act[0] if local_arri_date_act else None,
                 arri_airp=arri_airp,
                 arri_airp_code=arri_airp_code,
                 ontime_rate=ontime_rate,
@@ -264,7 +238,7 @@ class Spider():
         for t in self.down_img_thread_list:
             t.join()
         for flight_info in flight_infos:
-            for item in ('dep_time_act','arri_time_act','ontime_rate'):
+            for item in ('corp_img','dep_time_act','arri_time_act','ontime_rate'):
                 if flight_info[item] != '--':
                     try:
                         if item != 'corp_img':
@@ -272,7 +246,7 @@ class Spider():
                         else:
                             flight_info[item] = self.img_result_dict[flight_info[item]]
                     except KeyError:
-                        logger.error("获取图片结果失败！,图片路径为：%s"%flight_info[item])
+                        print("[1]获取失败！",flight_info[item])
                         myPrint(self.img_result_dict)
         self.img_result_dict.clear()
         # 重新对应图片
@@ -291,15 +265,18 @@ class Spider():
         try:
             ori_html = self.session.get(query_url,headers = self.headers.get_headers(1))
         except Exception as e:
-            logger.error("获取 url 为 %s 时出现错误，已返回空字典，错误原因为 %s"%(query_url,e))
+            print("[2]网页获取出现错误！")
+            print("[2]网页 url：",query_url)
+            print("[2]错误原因：",e)
             return airp_datas
         print("[2]获取到网页")
         if ori_html.status_code != 200:
-            logger.error("获取到的 url 为 %s 的网页响应状态码有误：%s"%(query_url,ori_html.status_code))
+            print("[2]网页返回状态码有误：",ori_html.status_code)
             return airp_datas
         html = etree.HTML(ori_html.text)
-        if '抱歉，没有找到您输入的航班信息' in ori_html.text:
-            logger.info("没有查找到相应的航班，查询条件： %s"%args)
+        p = html.xpath('//div[@class="fly_main"]//img[contains(@src,"404")]')
+        if p:
+            print("[2]抱歉，没有查找到您需要的航班！")
             # self.__print_html(html.text)
             return airp_datas
         # self.__print_html(html)
@@ -323,7 +300,7 @@ class Spider():
         ave_ontime_rate = self.img_mission_queue.put((ave_ontime_rate_imgurl,ave_ontime_rate_imgpath,1))
         # print(ave_ontime_rate)
         delay_time_tip = html.xpath('//div[@class="flyProc"]//li[@class="age"]/span/text()')
-        delay_time_tip = delay_time_tip[0] if delay_time_tip else '--'
+        delay_time_tip = delay_time_tip[0] if delay_time_tip else None
         # print(delay_time_tip)
         pre_fligt = html.xpath('//div[@class="old_state"]/text()')[0]
         # print(pre_fligt)
@@ -370,7 +347,7 @@ class Spider():
                     else:
                         item_data_img_url = self.base_url + item_data_img_url[0].strip()
                         item_data_img_path = './spider/img_file/%s_%s-%s_%s_%d%d%d.png'%(corp_name_and_flight_code,dep_city,arri_city,query_date,i+1,sub_i+1,j+1)
-                        self.img_mission_queue.put((item_data_img_url,item_data_img_path,1))
+                        self.img_mission_queue.put((item_data_img_url,item_data_img_path,3))
                         item_data = item_data_img_path
                     airp_datas[involved_airps[i]]['item_name_list'].append(item_name)
                     airp_datas[involved_airps[i]]['item_data_list'].append(item_data)
@@ -389,7 +366,8 @@ class Spider():
             airp_datas[airp_name] = dict(zip(airp_datas[airp_name]['item_name_list'],new_list))
         # 对应天气
         for index,airp_name in enumerate(involved_airps):
-            airp_datas[airp_name]['weather']=airp_weathers[3*index:3*index+3]
+            airp_datas[airp_name]['weather'] = [airp_weathers_icons[index]]
+            airp_datas[airp_name]['weather'].extend(airp_weathers[3*index:3*index+3])
 
         print('[2]处理完成，等待图片任务下发完成...')
         while not self.img_mission_queue.empty():
@@ -402,11 +380,22 @@ class Spider():
         # 获取图片内容
         for airp_name,airp_data in airp_datas.items():
             for item_name,item_data in airp_data.items():
-                if item_data != '--' and item_name!='weather':
-                    try: 
-                        airp_datas[airp_name][item_name] = self.img_result_dict.pop(item_data)
+                if isinstance(item_data,list):
+                    # 说明这是天气项
+                    try:
+                        airp_datas[airp_name][item_name][0] = self.img_result_dict[item_data[0]]
                     except KeyError:
-                        logger.error("获取图片结果失败！,图片路径为：%s"%item_data)
+                        print('[2]获取失败！',item_data)
+                        myPrint(self.img_result_dict)
+                elif item_data != '--':
+                    # 获取其他不为'--'的内容
+                    try: 
+                        if ('起飞' in item_name) or ('到达' in item_name):
+                            airp_datas[airp_name][item_name] = self.img_result_dict.pop(item_data)[0]
+                        else:
+                            airp_datas[airp_name][item_name] = self.img_result_dict.pop(item_data)
+                    except KeyError:
+                        print('[2]获取失败！',item_data)
                         myPrint(self.img_result_dict)
         self.img_result_dict.clear()
         return dict(
@@ -493,10 +482,10 @@ class Spider():
             cabin_infos = cabin_infos
             )
 if __name__ == '__main__':
-    # myPrint(Spider().get_base_info('PVG','PEK','20190415'))
-    # myPrint(Spider().get_base_info('CA1234','20190415'))
-    # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-PVG.html?AE71649A58c77"))
-    myPrint(Spider().get_detailed_info("http://www.variflight.com/schedule/YIN-PEK-CA1234.html?AE71649A58c77="))
+    # myPrint(Spider().get_base_info('PVG','PEK','20190413'))
+    #myPrint(Spider().get_base_info('CA1234','20190414'))
+    # myPrint(Spider().get_base_info("http://www.variflight.com/flight/PEK-CAN.html?AE71649A58c77"))
+    myPrint(Spider().get_detailed_info("http://www.variflight.com/schedule/BHY-PEK-CZ3147.html?AE71649A58c77="))
     # myPrint(Spider().get_detailed_info('http://www.variflight.com/schedule/BHY-CSX-CZ3147.html?AE71649A58c77=&fdate=20190331'))
     # myPrint(Spider().get_detailed_info('PVG','PEK','NZ3820','20190414'))
     # myPrint(Spider().get_confort_info('http://happiness.variflight.com/search/airline?date=2019-04-04&dep=PEK&arr=CTU&type=1'))
