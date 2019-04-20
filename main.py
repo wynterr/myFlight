@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,render_template
 from flask import request
 from flask import make_response
 import json
@@ -7,27 +7,43 @@ from flask_cors import *
 from connect import DataBase
 import time
 import datetime
-import threading
+from flask_bootstrap import Bootstrap
+#from flask.ext.bootstrap import Bootstrap
 app = Flask(__name__)
+bootstrap=Bootstrap(app)
 CORS(app, supports_credentials=True, resources=r'/*')
 db = DataBase()
-logNum = 0
-lk = threading.RLock()
-
-def mklog(num,msg):
-    pass
-
-def getnum():
-    global logNum
-    lk.acquire()
-    logNum = logNum + 1
-    num = logNum
-    lk.release()
-    return num
 
 @app.route("/")
 def hello():
-    return "Flight wherever you want!"
+    return '666666'
+
+@app.route("/beta/modifyPassword/<username>/<token>",methods = ['POST','GET'])
+@cross_origin()
+def modifyPassword(username='',token=''):
+    try:
+        if request.method == 'POST':
+            print(request.form)
+            newPassword = request.form['new']
+            comfirm = request.form['confirm']
+            if (newPassword != comfirm):
+                return '两次密码不一致，请重新输入'
+            else:
+                success = db.updateMessage(username,newPassword)
+                if (success):
+                    return '密码修改成功！'
+                else:
+                    return '修改密码失败，请重试'
+        else:
+            if (db.is_modifiable(username,token)):
+                return render_template('base.html')
+            else:
+                return '链接已失效'
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
 
 @app.route("/beta/byFlightNumber",methods = ['POST','OPTIONS'])
 @cross_origin()
@@ -120,6 +136,7 @@ def register():
     try:
         print("register",request.json)
         data = request.json
+        db.dbConnect()
         success = db.register(data['username'],data['password'],data['email'])
         if (success == 0):
             raise(Exception("Failed to register!"))
@@ -139,6 +156,7 @@ def login():
     try:
         print("login",request.json)
         data = request.json
+        db.dbConnect()
         res = db.login(data['username'],data['password'])
         success = res['status']
         msg = {}
@@ -170,9 +188,7 @@ def active(username,token):
         if (success == 0):
             raise(Exception("Failed to activate!"))
         else:
-            msg = {}
-            msg['status'] = 'success!'
-            return json.dumps(msg)
+            return "Account successfully activated!"
     except Exception as e:
         print('Error:',e)
         error = {}
@@ -185,6 +201,7 @@ def focus():
     try:
         print("focus",request.json)
         data = request.json
+        db.dbConnect()
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
@@ -208,6 +225,7 @@ def unfocus():
     try:
         print("unfocus",request.json)
         data = request.json
+        db.dbConnect()
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
@@ -231,6 +249,7 @@ def getFocusedFlights():
     try:
         print("getFocusedFlights",request.json)
         data = request.json
+        db.dbConnect()
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
@@ -255,6 +274,7 @@ def logout():
     try:
         print("logout",request.json)
         data = request.json
+        db.dbConnect()
         logedIn = db.isLogedIn(data['username'],data['token'])
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
@@ -272,5 +292,32 @@ def logout():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
+@app.route("/beta/modifyPasswordEmail",methods = ['POST'])
+@cross_origin()
+def modifyPasswordEmail():
+    try:
+        print("modifyPasswordEmail",request.json)
+        data = request.json
+        db.dbConnect()
+        logedIn = 1
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            success = db.email_for_pwd(data['username'])
+            if (success == 0):
+                raise(Exception("Error occured when sending modify password email!"))
+            else:
+                msg = {}
+                msg['status'] = 'success!'
+                return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+
 if (__name__ == '__main__'):
     app.run(host='0.0.0.0')
+    while (True):
+        pass
+        time.sleep(60)

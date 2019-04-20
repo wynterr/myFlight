@@ -18,18 +18,16 @@ from lxml import etree
 from .headers import Headers
 from .myPrint import myPrint
 
-logger = logging.getLogger("Spider")
-logging.basicConfig(level=logging.INFO,
-                format='[%(levelname)-7s] %(asctime)s %(filename)s[line:%(lineno)d] %(message)s',
-                datefmt='%Y-%m-%d, %H:%M:%S ',
-                filename='./log/spider_run_log.log',
-                filemode='a')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('[%(levelname)-8s] %(message)s')
+logger = logging.getLogger(__name__)
+logfile = logging.FileHandler("./log/spider_run_log.log")
+console = logging.StreamHandler()  
+formatter = logging.Formatter('[%(levelname)-8s] %(asctime)s %(filename)s[line:%(lineno)d] %(message)s')
+logfile.setFormatter(formatter) 
 console.setFormatter(formatter)
+logfile.setLevel(logging.WARNING)
+console.setLevel(logging.INFO)
+logger.addHandler(logfile) 
 logger.addHandler(console)
-# 最后一句指明了只输出本文件内的logging信息
 
 class Spider():
     def __init__(self):

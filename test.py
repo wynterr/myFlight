@@ -11,7 +11,7 @@ loginUrl = 'http://' + IP + ':5000/beta/login';
 focusUrl = 'http://' + IP + ':5000/beta/focus';
 unfocusUrl = 'http://' + IP + ':5000/beta/unfocus';
 listUrl = 'http://' + IP + ':5000/beta/getFocusedFlights';
-
+smeUrl = 'http://' + IP + ':5000/beta/modifyPasswordEmail';
 def testSBFN():    #search by flight number
     body = {
         'op':1,
@@ -71,9 +71,9 @@ def testDIBU():  #search for detailed imformation by url
 
 def testReg():  #test register
     body = {
-        'username' : 'testUser',
+        'username' : 'xwttt',
         'password' : '11223344',
-        'email' : '111111111@qq.com'
+        'email' : '786311041@qq.com'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = regUrl,headers = headers,data = json.dumps(body));
@@ -82,7 +82,7 @@ def testReg():  #test register
 
 def testLogin():
     body = {
-        'username' : 'testUser',
+        'username' : 'testUser222',
         'password' : '11223344'
     }
     headers = {'content-type': "application/json"}
@@ -124,11 +124,20 @@ def testGetList():
     data = json.loads(res.text)
     print(data)
 
+def testSendModifyEmail():
+    body = {
+        'username' : 'xwttt'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = smeUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
    #testSBFN();
-   testSBC()
+   #testSBC()
    #testDI();
    #testCI();
    #testDIBU();
@@ -137,3 +146,4 @@ if (__name__ == '__main__'):
    #testFocus()
     #testGetList()
     #testUnfocus()
+    testSendModifyEmail()
