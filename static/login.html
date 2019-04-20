@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="userInfo.js"></script>
+</head>
+<body>
+<div class="header">
+    <div class="logo">
+        <a href="homepage.html">
+            <img src="image/logo.jpg" width="200px" alt="logo">
+        </a>
+    </div>
+    <ul class="menu">
+        <li class="top-menu-item top-menu-noclick">
+            <a href="homePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd" ><span>航班查询</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                    <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                </div>
+            </div>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd"><span>个人中心</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="mainimage">
+    <div class="image">
+        <img src="image/page1.jpg" width="100%">
+    </div>
+    <div>
+        <p class="title">登录</p>
+    </div>
+    <div class="login-window">
+        <p class="usename">用户名</p>
+        <p><input type="text" id="userName" class="input-window" placeholder="请输入用户名" maxlength="13" size="60" autofocus  onchange="getUserName(this.value)"></p>
+        <p class="pwd">密码</p>
+        <p><input type="password" id="pwd" class="input-window" placeholder="请输入密码" maxlength="13" size="60" autofocus  onchange="getPassWord(this.value)"></p>
+        <p><input class="login-btn" id="login" type="button" onclick="login()" value="登录"></p>
+        <p class="remember"><input type="checkbox" id="remember">记住账号</p>
+        <p><a href="forget.html" class="forget">忘记密码？</a></p>
+        <p><a href="register.html" class="noAccount">还没有账号？快速注册</a></p>
+    </div>
+</div>
+<script>
+    var localPage = "login.html";
+    var userName="";
+    var passWord="";
+    var user=document.getElementById('userName');
+    var pass=document.getElementById('pwd');
+    var check=document.getElementById("remember");
+    var localUser = localStorage.getItem('user');
+    var localPass = localStorage.getItem('pass');
+    user.value=localUser;
+    pass.value=localPass;
+    if(localUser!=""){
+        check.setAttribute("checked","");
+    }
+    function getUserName(userName){
+        this.userName=userName;
+    }
+    function getPassWord(passWord){
+        this.passWord=passWord;
+    }
+    function login() {
+        if (check.checked) {
+            localStorage.setItem('user', user.value);
+        } else {
+            localStorage.setItem('user', '');
+        }
+        var op = 1;
+        window.location.href = "checkInfoStyle.html?op:" + op + "&user:" + user.value + "&pwd:" + pass.value  + "&email:" + "";
+    }
+</script>
+</body>
+</html>

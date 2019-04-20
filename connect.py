@@ -5,7 +5,8 @@ from email.header import Header
 from email.utils import formataddr
 import random,string
 from newTable import createTable
-
+import datetime
+from spider.spider import Spider
 class DataBase:
 #init中修改连接的参数，  email_for_pwd中 URL未修改
     def __init__(self):
@@ -32,7 +33,7 @@ class DataBase:
         # 建立数据库连接
         self.dbConnect()
 
-        createTable(self.cur)     #创建表
+        # createTable(self.cur)     #创建表
 
     #建立数据库连接
     def dbConnect(self):
@@ -205,10 +206,10 @@ class DataBase:
         return 0
 
     # 关注函数，成功插入返回1，失败返回0，账号未登录返回-1 时间数据如：2019-08-12 00:00:00
-    def focus(self,userID, flightID, f_date):
+    def focus(self,userID, flightID, f_date,current_status):
         sql = "insert into map values(%s,%s,%s,%s)"
         try:
-            res = [userID, flightID, f_date,'unknown']
+            res = [userID, flightID, f_date,current_status]
             self.cur.execute(sql, res)
             self.connect.commit()
             print("关注建立成功")
@@ -281,13 +282,14 @@ class DataBase:
             self.cur.execute(sql2,res)
             self.connect.commit()
             print(userID + ' 的修改链接发送成功')
+            return 1
         except Exception as e:
             print(e)
             print('修改链接发送失败')
-        
+        return 0
 
     #根据航班号获取关注它的所有用户列表 并向用户发送提醒邮件    格式未修改
-    def send_warning_email(self,flightID,time):
+    def send_warning_email1(self,flightID,time):
         print(flightID,time)
         sql =" select map.userID,email from map \
             left JOIN userMessage on map.userID = userMessage.userID \
@@ -307,15 +309,45 @@ class DataBase:
         for info in user_list:
             self.send_one_warning(info[0],info[1],flightID)
 
-    #根据用户ID 和邮件发送提醒邮件
-    def send_one_warning(self,userID,email,flightID):
-        content = '尊敬的航班助手用户 ' + userID + ' :您关注的航班 ：' + flightID +'发生延误，具体情况请登录航班助手进行查看'
+    #遍历关注列表，查看航班状态是否发生变化
+    def send_warning_email(self):
+        print("开始检查延误")
+        sql = 'select map.userID,flightID,date,f_status,email from map \
+               left JOIN userMessage on map.userID = userMessage.userID'
+
+        try:
+            self.cur.execute(sql)
+            records = self.cur.fetchall()
+            for record in records:
+                # record[0]:userID  [1]:flightID [2]:date [3]:f_state  [4]:email
+
+                time = record[2].strftime('%Y%m%d')
+                allData = Spider().get_base_info(record[1],time)
+                for i in range(1):
+                    thisRecord = allData[i]
+                    if (thisRecord['flight_status'] != record[3]):
+                        # print(record[0], record[4], record[1])
+                        self.send_one_warning(record[0], record[4], record[1],thisRecord['flight_status'],record[2])
+                        break
+
+        except Exception as e:
+            print("发送失败")
+            print(e)
+    #根据用户ID 和邮件发送提醒邮件,并修改记录状态
+    def send_one_warning(self,userID,email,flightID,status,time):
+        content = '尊敬的航班助手用户 ' + userID + ' :您关注的航班 ：' + flightID +'状态改变为' + status + '，具体情况请登录航班助手进行查看'
         msg = MIMEText(content, 'plain', 'utf-8')
-        msg['Subject'] = "航班延误提醒"  # Header('确认注册', 'utf-8')
+        msg['Subject'] = "航班状态改变提醒"  # Header('确认注册', 'utf-8')
         msg['From'] = formataddr(["flight", self.para2['sender']])
         msg['To'] = formataddr(["client", email])
         self.mailConnect()
         self.smtpObj.sendmail(self.para2['sender'], email, msg.as_string())
+
+        sql = 'update map set f_status = %s where userID = %s and flightID = %s and date = %s'
+        res = [status,userID,flightID,time]
+        self.cur.execute(sql,res)
+        self.connect.commit()
+        print(userID + '的提示邮件已发送,关注状态已修改')
     #
 # register(userID="yanhuia", pwd="12345", email="1129720379@qq.com")
 # login("yanhui6","12345")
@@ -325,7 +357,7 @@ class DataBase:
 # unfocus('12345',"yanhui","a123","2019-08-12 00:00:00")
 
 pass
-# db = DataBase()
+#db = DataBase()
 #print(db.getList("yanhui",'1234'))
 # db.activate("yan","p3lwgjXmys")
 # db.login(userID="yan", pwd="2344")
@@ -338,5 +370,5 @@ pass
 # db.focus('yan','as123','2019-08-12 00:00:00')
 # db.unfocus('yan','ac99','2019-08-12 00:00:00')
 # db.email_for_pwd('yan')
-# db.send_warning_email('as123','2019-08-12 00:00:00')
+#db.send_warning_email()
 # db.is_modifiable('yan','AIhf5wMdXO')

@@ -8,15 +8,28 @@ from connect import DataBase
 import time
 import datetime
 from flask_bootstrap import Bootstrap
+from flask_apscheduler import APScheduler
 #from flask.ext.bootstrap import Bootstrap
-app = Flask(__name__)
+class Config(object):  # 创建配置，用类
+    JOBS = [  # 任务列表
+        
+        {  
+            'id': 'job',
+            'func': '__main__:check',
+            'args': None,
+            'trigger': 'interval',
+            'seconds': 120,
+        }
+    ]
+app = Flask(__name__,static_url_path='',root_path='/root/flight')
+app.config.from_object(Config())
 bootstrap=Bootstrap(app)
 CORS(app, supports_credentials=True, resources=r'/*')
 db = DataBase()
 
 @app.route("/")
 def hello():
-    return '666666'
+    return app.send_static_file('homepage.html')
 
 @app.route("/beta/modifyPassword/<username>/<token>",methods = ['POST','GET'])
 @cross_origin()
@@ -206,7 +219,8 @@ def focus():
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
         else:
-            success = db.focus(data['username'],data['flightCode'],data['date'])
+            allData = Spider().get_base_info(data['flightCode'],data['date'])
+            success = db.focus(data['username'],data['flightCode'],data['date'],allData[0]['flight_status'])
             if (success == 0):
                 raise(Exception("Error occured when focusing the flight!"))
             else:
@@ -316,8 +330,14 @@ def modifyPasswordEmail():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
+
+
+def check():
+    db.send_warning_email()
+
+
 if (__name__ == '__main__'):
+    scheduler=APScheduler()
+    scheduler.init_app(app)
+    scheduler.start()
     app.run(host='0.0.0.0')
-    while (True):
-        pass
-        time.sleep(60)
