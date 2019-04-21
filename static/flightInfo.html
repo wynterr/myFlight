@@ -144,10 +144,10 @@
                             '<td><input type="button" value="详细信息" class="btn" onclick=detail(JSON.stringify(responseData['+ i +'].flight_detailed_info_url))></td>';
                                 var followInfo = deleteMark1(JSON.stringify(responseData[i].flight_code)) + "_" + date;
                                 if(get_cookie(followInfo) == 0){
-                                    str+='<td><input id="follow" type="button" value="关注航班" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code))"></td>';
+                                    str+='<td><input id="follow'+i+'" type="button" value="关注航班" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')"></td>';
                                 }
                                 else{
-                                    str+='<td><input id="follow" type="button" value="已关注" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code))"></td>';
+                                    str+='<td><input id="follow'+i+'" type="button" value="已关注" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')"></td>';
                                 }
                                 str+='</tr>';
                     }
@@ -173,7 +173,7 @@
     function detail(detail){
         window.location.href = "detialInfo.html?detail==" + detail.replace(/"/g,"");
     }
-    function follow(flightcode){
+    function follow(flightcode,i){
         if(get_cookie("islogin") == 0){
             alert("您尚未登录！");
         }
@@ -181,7 +181,7 @@
             var Data = JSON.stringify({
                 username:get_cookie("user"),
                 token:deleteMark1(get_cookie("token")),
-                flightCode:flightCode,
+                flightCode:deleteMark1(flightcode),
                 date:get_cookie("date"),
             })
             var xhr1 = ajaxFunction();
@@ -191,7 +191,7 @@
                     if(responseData1.status == "success!"){
                         alert("关注成功");
                         document.cookie = deleteMark1(flightcode)+"_" + get_cookie("date") + "=1";
-                        document.getElementById("follow").value = "已关注";
+                        document.getElementById("follow"+i).value = "已关注";
                     }
                     else if(responseData1.status== "ErrorError occured when focusing the flight!"){
                         alert("您以关注过该航班");

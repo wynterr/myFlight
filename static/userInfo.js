@@ -67,22 +67,24 @@ function toLogOff(url){
         logout();
         var jsonData = JSON.stringify({
             username:get_cookie("user"),
-            token:deleteMark(get_cookie("token")),
+            token:DeleteMark(get_cookie("token")),
         })
-        var xhr = ajaxFunction();
+        var xhr = AjaxFunction();
         var str = "";
-        if(xhr.readyState==4){
-            responseData = JSON.parse(xhr.responseText);
-            var length = responseData.length;
-            for(var i = 0;i < length;i++){
-                var followInfo = deleteMark(JSON.stringify(responseData[i].flightCode)) + "_" + deleteMark1(JSON.stringify(responseData[i].date));
-                document.cookie = followInfo+"=0";
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                responseData = JSON.parse(xhr.responseText);
+                var length = responseData.length;
+                for(var i = 0;i < length;i++){
+                    var followInfo = DeleteMark(JSON.stringify(responseData[i].flightCode)) + "_" + DeleteMark(JSON.stringify(responseData[i].date));
+                    document.cookie = followInfo+"=0";
+                }
+                window.location.href = "homepage.html";
             }
         }
         xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
         xhr.setRequestHeader("Content-type","application/json");
         xhr.send(jsonData);
-        window.location.href = "homepage.html";
     }
     else{
         notLogin();

@@ -65,24 +65,26 @@
         }
         if(get_cookie("islogin") == 1){
             document.getElementById("welcome").innerHTML='<p id="welcomeTo" class="welcomeTo">欢迎使用航班助手</p>';
-        }
-        var jsonData = JSON.stringify({
-            username:get_cookie("user"),
-            token:deleteMark(get_cookie("token")),
-        })
-        var xhr = ajaxFunction();
-        var str = "";
-        if(xhr.readyState==4){
-            responseData = JSON.parse(xhr.responseText);
-            var length = responseData.length;
-            for(var i = 0;i < length;i++){
-                var followInfo = deleteMark(JSON.stringify(responseData[i].flightCode)) + "_" + deleteMark1(JSON.stringify(responseData[i].date));
-                document.cookie = followInfo+"=1";
+            var jsonData = JSON.stringify({
+                username:get_cookie("user"),
+                token:deleteMark(get_cookie("token")),
+            })
+            var xhr = ajaxFunction();
+            var str = "";
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState==4){
+                    responseData = JSON.parse(xhr.responseText);
+                    var length = responseData.length;
+                    for(var i = 0;i < length;i++){
+                        var followInfo = deleteMark(JSON.stringify(responseData[i].flightCode)) + "_" + deleteMark(JSON.stringify(responseData[i].date));
+                        document.cookie = followInfo+"=1";
+                    }
+                }
             }
+            xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+            xhr.setRequestHeader("Content-type","application/json");
+            xhr.send(jsonData);
         }
-        xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
-        xhr.setRequestHeader("Content-type","application/json");
-        xhr.send(jsonData);
     }
     function deleteMark(str){
         var newStr;

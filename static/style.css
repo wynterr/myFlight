@@ -301,7 +301,7 @@
     position: relative;
     top: 120px;
     border: 1px solid #b4bdb8;
-    width: 1300px;
+    width: 1400px;
     margin: auto;
     border-radius: 5px;
 }
@@ -545,7 +545,7 @@
 .detail{
     position: relative;
     top: 100px;
-    width: 1000px;
+    width: 800px;
     margin: auto;
 }
 .detail .mainInfo{
