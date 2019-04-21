@@ -142,20 +142,7 @@ class DataBase:
             print(e)
         return 0
 
-    #管理员登录，
-    def login_mana(self,userID,pwd):
-        sql = 'select count(*) from manager where userID = %s and pwd = %s'
-        res = [userID,pwd]
-        try:
-            self.cur.execute(sql,res)
-            count = self.cur.fetchone()[0]
-            if(count == 1):
-                print("管理员登录成功")
-                return 1
-        except Exception as e:
-            print(e)
-        print("管理员账号或密码错误")
-        return 0
+    
     #判断账号是否是登录状态
     def isLogedIn(self,userID,stateCode):
         sql2 = "select count(*) from state where userID = %s and s_code = %s"
@@ -348,6 +335,40 @@ class DataBase:
         self.cur.execute(sql,res)
         self.connect.commit()
         print(userID + '的提示邮件已发送,关注状态已修改')
+    #管理员登录，
+    def login_mana(self,userID,pwd):
+        sql = 'select count(*) from manager where userID = %s and pwd = %s'
+        res = [userID,pwd]
+        try:
+            self.cur.execute(sql,res)
+            count = self.cur.fetchone()[0]
+            if(count == 1):
+                print("管理员登录成功")
+                return 1
+        except Exception as e:
+            print(e)
+            print("管理员账号或密码错误")
+        return 0
+    def get_user_list(self):
+        sql = 'select userID,email from userMessage'
+        try:
+            self.cur.execute(sql)
+            userList = self.cur.fetchall()
+            userList = list(userList)
+            return userList
+        except Exception as e:
+            print(e)
+        return []
+
+    def delete_user(self,userID):
+        sql = 'delete from userMessage where userID = %s '
+        try:
+            self.cur.execute(sql,userID)
+            self.connect.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        return 0
     #
 # register(userID="yanhuia", pwd="12345", email="1129720379@qq.com")
 # login("yanhui6","12345")

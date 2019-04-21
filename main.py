@@ -330,10 +330,67 @@ def modifyPasswordEmail():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
+@app.route("/beta/manaLogin",methods = ['POST'])
+@cross_origin()
+def manaLogin():
+    try:
+        print("ManaLogin",request.json)
+        data = request.json
+        db.dbConnect()
+        success = db.login_mana(data['username'],data['password'])
+        msg = {}
+        if (success == 0):
+            msg['status'] = 'Wrong username or password!'
+            return json.dumps(msg)
+        elif (success == 1):
+            msg['status'] = 'Success!'
+            return json.dumps(msg)
+        else:
+            msg['status'] = 'Unknown error!'
+            return json.dumps(msg)    
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
 
+@app.route("/beta/getUserList",methods = ['POST'])
+@cross_origin()
+def getUserList():
+    try:
+        print("getUserList",request.json)
+        data = request.json
+        db.dbConnect()
+        return json.dumps(db.get_user_list())
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
 
+@app.route("/beta/deleteUser",methods = ['POST'])
+@cross_origin()
+def deleteUser():
+    try:
+        print("deleteUser",request.json)
+        data = request.json
+        db.dbConnect()
+        success = db.delete_user(data['username'])
+        if (success == 0):
+            raise(Exception("Unknown error when deleting user %s!"%data['username']))
+        else:
+            msg = {}
+            msg['status'] = 'Success!'
+            return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error%s'%str(e)
+        return json.dumps(error)
+        
 def check():
-    db.send_warning_email()
+    pass
+    #db.send_warning_email()
 
 
 if (__name__ == '__main__'):

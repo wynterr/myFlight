@@ -16,7 +16,7 @@ def testSBFN():    #search by flight number
     body = {
         'op':1,
         'flightCode':'CA1234',
-        'date':'20190413'
+        'date':'20190420'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -136,7 +136,7 @@ def testSendModifyEmail():
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
-   #testSBFN();
+   testSBFN();
    #testSBC()
    #testDI();
    #testCI();
@@ -146,4 +146,4 @@ if (__name__ == '__main__'):
    #testFocus()
     #testGetList()
     #testUnfocus()
-    testSendModifyEmail()
+    #testSendModifyEmail()
