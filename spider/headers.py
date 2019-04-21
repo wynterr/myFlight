@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from fake_useragent import UserAgent
-import requests
+from .__init__ import *
 class Headers(object):
     """专门为spider提供headers的类"""
     def __init__(self):
-        self.ua = UserAgent(verify_ssl=False).random
+        self.ua = UserAgent().random
         # 共三个 headers ，第一个是获取基本信息和详细信息时的headers，第二个是获取舒适度信息时的headers，第三个是获取图片时的headers
         self.headers1_default = {
         'Host': 'www.variflight.com',
@@ -40,17 +39,11 @@ class Headers(object):
         tem2 =  re.sub(r":(.*?)\n",lambda x:sub_fun_for_value((x.group(1))),tem1)
         # print("替换完值：\n",tem2)
         return json.loads("{%s}"%tem2.strip()[:-1])
-    def get_headers(self,type:int,cookie:requests.cookies.RequestsCookieJar=None,ua:dict=None,refer:str=None):
+    def get_headers(self,type:int):
         if type == 1:
             headers = self.headers1_default
         elif type==2:
             headers = self.headers2_default
         else :
             headers = self.headers3_default
-        if cookie:
-            headers.update(Cookie=cookie)
-        if ua:
-            headers.update({'User-Agent':ua})
-        if refer:
-            headers.update(Refer=refer)
         return headers

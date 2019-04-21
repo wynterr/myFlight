@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>欢迎</title>
+  <link rel="stylesheet" href="Layout.css" type="text/css">
+  <script type="text/javascript">
+      var url = location.search;
+        var op = 0;
+        var admin = "";
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);//substr()方法返回从参数值开始到结束的字符串；
+            strs = str.split("&");
+            if(strs[0].split(":")[1] == "1"){
+                op = 1;
+            }
+            else{
+                op = 2;
+            }
+            admin = strs[1].split(":")[1];
+
+        }
+
+  </script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <a href="homepage.html">
+                <img src="image/logo.jpg" width="200px" alt="logo">
+            </a>
+        </div>
+        
+        
+      <div class="mainimage">
+        <div class="image">
+            <img src="image/page1.jpg" width="100%">
+        </div>
+        <div id="welcome" class="welcome">
+
+        </div>
+        <div>
+          <a>欢迎您！管理员</a>
+        </div>
+        <div class="login-window">
+                <p class="usename">查找用户</p>
+                <p><input type="text" id="username" class="input-window" placeholder="请输入用户名" maxlength="13" size="60" autofocus  onchange="getUserName(this.value)"></p>
+                <p><input class="search-btn" id="search" type="button" href=:UserManagement.html" onclick="search()" value="查找"></p>
+        </div>
+      </div>
+
+    </div>
+ </body>
+
+ <script type="text/javascript">
+      function deleteMark1(str){
+        var newStr;
+        newStr = str.replace(/"/g,'',);
+        return newStr;
+      }
+      function search(){
+          var user = document.getElementById("username");
+          username = user.value;
+          
+          
+          var jsonData = JSON.stringify({
+            username:username,
+          })
+          
+          var xhr = ajaxFunction();
+          var responseData;
+          var length;
+          var useremail;
+          xhr.onreadystatechange = function(){
+
+
+            if(xhr.readyState==4){
+                responseData = JSON.parse(xhr.responseText);
+                
+                length = responseData.length;
+                useremail = JSON.stringify(responseData.email);
+                if(JSON.stringify(responseData) == "[]"){
+                        alert("不存在此用户！");
+                        window.location.href = "WelcomePage.html";
+                }
+                else{
+                        
+                        var op =1;
+
+                        window.location.href = "UserManagement.html?username:" + username + "&useremail:" + useremail.replace(/"/g,"");
+                    }
+                
+                }
+            }
+          xhr.open("POST","http://114.115.134.119:5000/beta/getUser",true);
+          xhr.setRequestHeader("Content-type","application/json");
+          xhr.send(jsonData);
+      }
+ 	    function ajaxFunction(){
+        var xmlHttp;
+        try{ // Firefox, Opera 8.0+, Safari
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch (e){
+            try{// Internet Explorer
+                xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e){
+                try{
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e){}
+            }
+        }
+        return xmlHttp;
+
+      }
+
+      window.onload = function(){
+        
+        
+    }
+ </script>
+
+ </html>

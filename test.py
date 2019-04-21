@@ -12,6 +12,7 @@ focusUrl = 'http://' + IP + ':5000/beta/focus';
 unfocusUrl = 'http://' + IP + ':5000/beta/unfocus';
 listUrl = 'http://' + IP + ':5000/beta/getFocusedFlights';
 smeUrl = 'http://' + IP + ':5000/beta/modifyPasswordEmail';
+guUrl = 'http://' + IP + ':5000/beta/getUser';
 def testSBFN():    #search by flight number
     body = {
         'op':1,
@@ -29,7 +30,7 @@ def testSBC():  #search by city
         'op':2,
         'cityFrom':'PEK',
         'cityTo':'SHA',
-        'date':'20190415'
+        'date':'20190420'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -133,10 +134,19 @@ def testSendModifyEmail():
     data = json.loads(res.text)
     print(data)
 
+def testGetUser():
+    body = {
+        'username' : 'test001'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = guUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 if (__name__ == '__main__'):
    #testReg(); 
    #testLog();
-   testSBFN();
+   #testSBFN();
    #testSBC()
    #testDI();
    #testCI();
@@ -147,3 +157,4 @@ if (__name__ == '__main__'):
     #testGetList()
     #testUnfocus()
     #testSendModifyEmail()
+    testGetUser()

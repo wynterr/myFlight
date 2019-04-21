@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录</title>
+  <link rel="stylesheet" href="Layout.css" type="text/css">
+
+</head>
+
+<body>
+	  <div class="header">
+        <div class="logo">
+            <a href="homepage.html">
+                <img src="image/logo.jpg" width="200px" alt="logo">
+            </a>
+        </div>
+
+        
+        <div class="dropdown-divider"></div>
+      <div class="mainimage">
+          <div class="image">
+              <img src="image/page1.jpg" width="100%">
+          </div>
+          <div id="welcome" class="welcome">
+
+          </div>
+          <form id="formLogin" novalidate method="POST" action="WelcomePage.html">
+            <label>登录</label>
+            <div class="login-window">
+                <p class="usename">管理员名</p>
+                <p><input type="text" id="adminname" class="input-window" placeholder="请输入用户名" maxlength="13" size="60" autofocus></p>
+                <p class="pwd">密码</p>
+                <p><input type="password" id="password" class="input-window" placeholder="请输入密码" maxlength="13" size="60" autofocus></p>
+                <p><input class="login-btn" id="login" type="button"  onclick="login1()" value="登录"></p>
+            </div>
+          </form>
+      </div>
+    </div>
+</body>
+
+<script>
+
+    function login1() {
+      var localPage = "LogIn.html";
+    var adminname="";
+    var passWord="";
+    var adminname1=document.getElementById("adminname");
+    var password1=document.getElementById("password");
+    adminname = adminname1.value;
+    password = password1.value;
+        var jsonData = JSON.stringify({
+            adminname:adminname,
+            password:password,
+        })
+        
+        var xhr = ajaxFunction();
+        var responseData;
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                
+                responseData = JSON.parse(xhr.responseText);
+                
+                if(responseData.status == "Success!"){
+                        alert("登录成功！");
+                         window.location.href = "WelcomePage.html";
+                }
+                else{
+                    alert("管理员名或密码错误！");
+                    window.location.href = "LogIn.html";
+                }
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/manaLogin",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+        // window.location.href="WelcomePage.html";
+    }
+    function ajaxFunction(){
+        var xmlHttp;
+        try{ // Firefox, Opera 8.0+, Safari
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch (e){
+            try{// Internet Explorer
+                xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e){
+                try{
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e){}
+            }
+        }
+        return xmlHttp;
+
+    }
+    
+</script>
+<script>
+  
+</script>
+</html>

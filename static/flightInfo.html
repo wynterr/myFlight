@@ -80,7 +80,7 @@
 </body>
 <script>
     var responseData;
-    var length;
+    var length = 0;
     function ajaxFunction(){
         var xmlHttp;
         try{ // Firefox, Opera 8.0+, Safari
@@ -101,6 +101,12 @@
         return xmlHttp;
     }
     window.onload = function(){
+            if(get_cookie("islogin") == 0){
+                var str1 = '<li class="login">\n' +
+                    '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
+                    '            </li>';
+                document.getElementById("login").innerHTML = str1;
+            }
             var jsonData = JSON.stringify({
                 op:op,
                 flightCode:flightCode,
@@ -116,7 +122,12 @@
                     var i = 0;
                     responseData = JSON.parse(xhr.responseText);
                     length = responseData.length;
-                    document.getElementById("data-num").innerHTML="<p>共"+length+"条航班信息</p>";
+                    if(length > 0){
+                        document.getElementById("data-num").innerHTML="<p>共"+length+"条航班信息</p>";
+                    }
+                    else{
+                        document.getElementById("data-num").innerHTML="<p>共0条航班信息</p>";
+                    }
                     str=str+'<table class="data-table">'+'<tr class="flight-data-hd"><th>所属航空公司</th><th>航班号</th><th>计划起飞</th><th>实际起飞</th><th>出发地</th><th>计划到达</th><th>实际到达</th><th>到达地</th><th>状态</th></tr>';
                     for(i = 0;i<length;i++){
                         var info_url = JSON.stringify(responseData[i].flight_detailed_info_url);
@@ -142,12 +153,6 @@
                     }
                     str=str+'</table>';
                     document.getElementById("data").innerHTML=str;
-                    if(get_cookie("islogin") == 0){
-                        var str1 = '<li class="login">\n' +
-                            '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
-                            '            </li>';
-                        document.getElementById("login").innerHTML = str1;
-                    }
                 }
             }
             xhr.open("POST","http://114.115.134.119:5000/beta/byFlightNumber",true);

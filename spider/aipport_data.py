@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-import pickle
-import json  
-import re
-import requests
-from myPrint import myPrint
+from __init__ import *
+
+'''
+"PEK,NAY": "BJS",
+"PVG,SHA": "SHH",
+XIY: "SIA"
+'''
 class UpdateAirpData(object):
     """用于更新机场代码数据的类"""
     def _updateData(self):
@@ -23,11 +23,11 @@ class UpdateAirpData(object):
 class CountryCodes(UpdateAirpData):
     # 每个国家对应一个代码
     def __init__(self):
-        self.filePath = 'CountryCodes.pkl'
+        self.filePath = AIRP_DATA_PKLS + 'CountryCodes.pkl'
         self.sourceUrl = "http://www.variflight.com/_newstatic/dest/js/countryCode.js?v=cd7ff69153103daf5ec8a59309dbaf1e"
         with open(self.filePath,'rb') as f:
             self.CountryCodes = pickle.load(f)
-    def printData(self):
+    def print_data(self):
         print("--------------CountryCodes----------------")
         myPrint(self.CountryCodes)
         print('------------------------------------------')
@@ -45,11 +45,11 @@ class CitiesData(UpdateAirpData):
     # in 为APP上显示的国内机场的全部列表，inhot为APP上显示的国内热门
     # out 为国外机场的全部数据，数据应该是最全的，outhot 是APP上显示的国外机场的列表，outhothot 是APP上显示的国外热门机场
     def __init__(self):
-        self.filePath = 'CitiesData.pkl'
+        self.filePath = AIRP_DATA_PKLS + 'CitiesData.pkl'
         self.sourceUrl = "http://www.variflight.com/_newstatic/dest/js/airportlist.js?v=d5c61d33f11f3aaca776b2cf9e27d563"
         with open(self.filePath,'rb') as f:
             self.CitiesData = pickle.load(f)
-    def printData(self):
+    def print_data(self):
         print("--------------CitiesData----------------")
         myPrint(self.CitiesData)
         print(self.CitiesData.keys())
@@ -66,11 +66,11 @@ class CitiesinbyAZ(UpdateAirpData):
     # 对应网站输入框的 国内热门 和 A-Z 的候选机场
     # 字典的所有键为：(['inHot', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'W', 'X', 'Y', 'Z'])
     def __init__(self):
-        self.filePath = "CitiesinbyAZ.pkl"
+        self.filePath = AIRP_DATA_PKLS + "CitiesinbyAZ.pkl"
         self.sourceUrl = "http://www.variflight.com/_newstatic/dest/js/citiesinbyAZ.js?v=7d573df17e320bd942b470f1149766a8"
         with open(self.filePath,'rb') as f:
             self.CitiesinbyAZ = pickle.load(f)
-    def printData(self):
+    def print_data(self):
         print("--------------CitiesinbyAZ----------------")
         myPrint(self.CitiesinbyAZ)
         print(self.CitiesinbyAZ.keys())
@@ -81,11 +81,11 @@ class Citiesoutbyarea(UpdateAirpData):
     # 字典的所有键值为：(['outhot', 'inhot', 'asia', 'europe', 'america', 'africa', 'oceania'])
     # outhot 对应“国际热门”，inhot 与 CitiesinbyAZ中的 inhot 内容一致，其余为各大洲的候选机场
     def __init__(self):
-        self.filePath = "Citiesoutbyarea.pkl"
+        self.filePath = AIRP_DATA_PKLS + "Citiesoutbyarea.pkl"
         self.sourceUrl = "http://www.variflight.com/_newstatic/dest/js/citiesoutbyarea.js?v=044d24deb14a6b6880c48f6d3c58446f"
         with open(self.filePath,'rb') as f:
             self.Citiesoutbyarea = pickle.load(f)
-    def printData(self):
+    def print_data(self):
         print("--------------Citiesoutbyarea----------------")
         myPrint(self.Citiesoutbyarea)
         print(self.Citiesoutbyarea.keys())
@@ -93,11 +93,7 @@ class Citiesoutbyarea(UpdateAirpData):
     def print_keys(self):
         print(self.Citiesoutbyarea.keys())
 if __name__ == '__main__':
-    with open('airports.txt','w') as f:
-        _console = sys.stdout
-        sys.stdout = f
-        #CountryCodes().print_keys()
-        CitiesData().printData()
-        #CitiesinbyAZ().print_keys()
-        #Citiesoutbyarea().print_keys()
-        sys.stdout = _console
+    # CountryCodes().print_data()
+    # CitiesData().print_data()
+    # CitiesinbyAZ().print_data()
+    Citiesoutbyarea().print_data()

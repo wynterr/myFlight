@@ -31,6 +31,10 @@ db = DataBase()
 def hello():
     return app.send_static_file('homepage.html')
 
+@app.route("/admin")
+def adminPage():
+    return app.send_static_file('HomePage.html')
+
 @app.route("/beta/modifyPassword/<username>/<token>",methods = ['POST','GET'])
 @cross_origin()
 def modifyPassword(username='',token=''):
@@ -65,14 +69,15 @@ def searchByFlightNumber():
         print("byFlightNumber",request.json)
         data = request.json
         date = data['date']
+        spd = Spider()
         if (data['op'] == 1):
             flightNumber = data['flightCode']
-            allData = Spider().get_base_info(flightNumber,date)
+            allData = spd.get_base_info(flightNumber,date)
              
         elif (data['op'] == 2):
             cityFrom = data['cityFrom']
             cityTo = data['cityTo']
-            allData = Spider().get_base_info(cityFrom,cityTo,date)
+            allData = spd.get_base_info(cityFrom,cityTo,date)
         else:
             error = {}
             error['status'] = 'Wrong op!'
@@ -110,14 +115,16 @@ def getDetailedInfo():
     try:
         print("detailedInfo",request.json)
         data = request.json
+        spd = Spider()
         if ('url' in data):
-            resData = Spider().get_detailed_info(data['url'])
+            resData = spd.get_detailed_info(data['url'])
         else:
             date = data['date']
             code = data['flightCode']
             cityFrom = data['cityFrom']
             cityTo = data['cityTo']
-            resData = Spider().get_detailed_info(cityFrom,cityTo,code,date)
+            resData = spd.get_detailed_info(cityFrom,cityTo,code,date)
+        print("Get flight detail data:",json.dumps(resData))
         return json.dumps(resData)
     except Exception as e:
         print('Error:',e)
@@ -135,7 +142,8 @@ def getComfortInfo():
         code = data['flightCode']
         cityFrom = data['cityFrom']
         cityTo = data['cityTo']
-        resData = Spider().get_detailed_info(code,cityFrom,cityTo,date)
+        spd = Spider()
+        resData = spd.get_detailed_info(code,cityFrom,cityTo,date)
         return json.dumps(resData)
     except Exception as e:
         print('Error:',e)
@@ -219,7 +227,10 @@ def focus():
         if (logedIn == 0):
             raise(Exception("User hasn't loged in!"))
         else:
-            allData = Spider().get_base_info(data['flightCode'],data['date'])
+            spd = Spider()
+            allData = spd.get_base_info(data['flightCode'],data['date'])
+            if (len(allData) < 1):
+                raise(Exception("Flight doesn't exist!"))
             success = db.focus(data['username'],data['flightCode'],data['date'],allData[0]['flight_status'])
             if (success == 0):
                 raise(Exception("Error occured when focusing the flight!"))
@@ -337,7 +348,7 @@ def manaLogin():
         print("ManaLogin",request.json)
         data = request.json
         db.dbConnect()
-        success = db.login_mana(data['username'],data['password'])
+        success = db.login_mana(data['adminname'],data['password'])
         msg = {}
         if (success == 0):
             msg['status'] = 'Wrong username or password!'
@@ -354,14 +365,19 @@ def manaLogin():
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
 
-@app.route("/beta/getUserList",methods = ['POST'])
+@app.route("/beta/getUser",methods = ['POST'])
 @cross_origin()
-def getUserList():
+def getUser():
     try:
-        print("getUserList",request.json)
+        print("getUser",request.json)
         data = request.json
         db.dbConnect()
-        return json.dumps(db.get_user_list())
+        userList = db.get_user_list()
+        print(userList)
+        for user in userList:
+            if (user[0] == data['username']):
+                return json.dumps({'userID':user[0],'email':user[1]})
+        return json.dumps([])
     except Exception as e:
         print('Error:',e)
         error = {}
@@ -387,7 +403,7 @@ def deleteUser():
         error = {}
         error['status'] = 'Error%s'%str(e)
         return json.dumps(error)
-        
+
 def check():
     pass
     #db.send_warning_email()

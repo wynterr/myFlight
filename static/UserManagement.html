@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="Layout.css" type="text/css">
+  <script type="text/javascript">
+        var localPage = "UserManagement.html";
+        var url = location.search;
+        var op = 0;
+        var username = "";
+        var username = "";
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);//substr()方法返回从参数值开始到结束的字符串；
+            strs = str.split("&");
+            username = strs[0].split(":")[1];
+            useremail = strs[1].split(":")[1];
+            
+        }
+
+  </script>
+</head>
+
+<body>
+	<div class="header">
+        <div class="logo">
+            <a href="homepage.html">
+                <img src="image/logo.jpg" width="200px" alt="logo">
+            </a>
+        </div>
+        
+      <div class="mainimage">
+        <div class="image">
+            <img src="image/page1.jpg" width="100%">
+        </div>
+        <div>
+          <a >查找到已注册用户</a>
+        </div>
+        <div id="data-num1" class="data-num">
+        
+        </div>
+        <div id="data-num2" class="data-num">
+        
+        </div>
+        <div>
+          <p><input class="logout-btn" id="logout" type="button"  onclick="logout1()" value="注销"></p>
+        </div>
+        <div id="welcome" class="welcome">
+
+        </div>
+      </div>
+  </div>
+</body>
+
+ <script type="text/javascript">
+    document.getElementById("data-num1").innerHTML=username;
+    document.getElementById("data-num2").innerHTML=useremail;
+    function logout1(){
+        var jsonData = JSON.stringify({
+            username:username,
+        })
+        var xhr = ajaxFunction();
+        var responseData;
+        var length;
+        
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                
+                responseData = JSON.parse(xhr.responseText);
+                
+                
+                if(responseData.status == "Success!"){
+                        alert("注销成功！");
+                }
+                else{
+                        alert("注销失败！");
+                }
+                window.location.href = "WelcomePage.html";
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/deleteUser",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+        
+    }
+ 	  function ajaxFunction(){
+        var xmlHttp;
+        try{ // Firefox, Opera 8.0+, Safari
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch (e){
+            try{// Internet Explorer
+                xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e){
+                try{
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e){}
+            }
+        }
+        return xmlHttp;
+
+    }
+
+    
+ </script>
+
+ </html>

@@ -1,6 +1,7 @@
 /.vscode
 errorlog
 /spider1
+/spider2
 /spider/img_file/*.png
 /__pycache__
 用户模块接口说明.*

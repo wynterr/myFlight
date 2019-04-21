@@ -92,7 +92,10 @@
     display:inline-block;
     padding-right:20px;
     color:#666;
-    text-decoration:none
+    text-decoration:none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 .header .menu li.top-menu-item .menu-hd span{
     padding:60px;
@@ -542,7 +545,7 @@
 .detail{
     position: relative;
     top: 100px;
-    width: 800px;
+    width: 1000px;
     margin: auto;
 }
 .detail .mainInfo{
