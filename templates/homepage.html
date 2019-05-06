@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>航班助手</title>
+    <script src="userInfo.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="homepage.html">
+                <img src="image/logo.jpg" width="200px" alt="logo">
+            </a>
+        </div>
+        <ul class="menu">
+            <li class="top-menu-item top-menu-noclick" id="HOME">
+                <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+            </li>
+            <li class="top-menu-item top-menu-noclick">
+                <a class="menu-hd" ><span>航班查询</span></a>
+                <div class="menu-dropdown">
+                    <div class="menu-dropdown-inner">
+                        <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                        <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                    </div>
+                </div>
+            </li>
+            <li class="top-menu-item top-menu-noclick">
+                <a class="menu-hd"><span>个人中心</span></a>
+                <div class="menu-dropdown">
+                    <div class="menu-dropdown-inner">
+                        <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                        <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                        <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                        <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <ul id="login">
+
+        </ul>
+    </div>
+    <div class="mainimage">
+        <div class="image">
+            <img src="image/page1.jpg" width="100%">
+        </div>
+        <div id="welcome" class="welcome">
+
+        </div>
+    </div>
+</body>
+<script>
+    var localPage = "homepage.html";
+    var responseData;
+    window.onload = function(){
+        if(get_cookie("islogin") == 0){
+            var str = '<li class="login">\n' +
+                '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str;
+            document.getElementById("welcome").innerHTML='<p id="welcomeTo" class="please">请您尽快登录以享受更多服务</p>';
+        }
+        if(get_cookie("islogin") == 1){
+            document.getElementById("welcome").innerHTML='<p id="welcomeTo" class="welcomeTo">欢迎使用航班助手</p>';
+        }
+        var jsonData = JSON.stringify({
+            username:get_cookie("user"),
+            token:deleteMark(get_cookie("token")),
+        })
+        var xhr = ajaxFunction();
+        var str = "";
+        if(xhr.readyState==4){
+            responseData = JSON.parse(xhr.responseText);
+            var length = responseData.length;
+            for(var i = 0;i < length;i++){
+                var followInfo = deleteMark(JSON.stringify(responseData[i].flightCode)) + "_" + deleteMark1(JSON.stringify(responseData[i].date));
+                document.cookie = followInfo+"=1";
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+    }
+    function deleteMark(str){
+        var newStr;
+        newStr = str.replace(/"/g,'',);
+        return newStr;
+    }
+    function ajaxFunction(){
+        var xmlHttp;
+        try{ // Firefox, Opera 8.0+, Safari
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch (e){
+            try{// Internet Explorer
+                xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e){
+                try{
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e){}
+            }
+        }
+        return xmlHttp;
+    }
+</script>
+</html>

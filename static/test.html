@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="flightlist.css">
+    <script src="cityData.js"></script>
+</head>
+<body>
+    <div>
+        <input type="text" id="dddd">
+    </div>
+        <div class="flight-list" id="flight-list">
+            <div class="city-head">
+                <table>
+                    <tr class="clearfix">
+                        <td><p class="cur" onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>
+                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="city-list">
+                <table class="city-Table">
+                    <tr>
+                        <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp悉尼金斯福德·史密斯&nbsp ></p></td>
+                        <td><input type="button" value="&nbsp墨尔本&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                        <td><input type="button" value="&nbsp奥克兰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                        <td><input type="button" value="&nbsp布里斯班&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                        <td><input type="button" value="&nbsp阿德莱德&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                        <td><input type="button" value="&nbsp珀斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                        <td><input type="button" value="&nbsp惠灵顿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                    </tr>
+                </table>
+                <table class="city-Table">
+                    <tr>
+                        <td><input type="button" value="&nbsp堪培拉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+</body>
+<script>
+    function hot() {
+        var str='<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p class="cur" onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>'+
+            '<div id="city-list">'+
+            '<table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北京首都&nbsp><p></td>\n' +
+            '                        <td><input type="button" value="&nbsp广州白云&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp上海浦东&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp上海虹桥&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp成都双流&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp深圳宝安&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp昆明长水&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '<table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp西安咸阳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp重庆江北&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp杭州萧山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp厦门高崎&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南京禄口&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp武汉天河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp沈阳桃仙&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '<table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp青岛流亭&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp福州长乐&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp三亚凤凰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp天津滨海&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>'+
+        '</div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function abcd() {
+        var str='<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                         <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspA&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿坝红原&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿尔山伊尔施&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿克苏温宿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿勒泰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿里昆莎&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp安康&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp安庆天柱山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp鞍山腾鳌&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp安顺黄果树&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp安阳北郊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp澳门&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspB&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp百色田阳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp保山云瑞&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp包头二里半&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp巴彦淖尔天吉泰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp北竿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp北海福成&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp北京南苑&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp北京首都&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp毕节飞雄&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp博乐阿拉山口&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspC&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp长春龙嘉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp常德桃花源&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp昌都邦达&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp长沙黄花&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp长治王村&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp常州奔牛&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp朝阳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp成都双流&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp赤峰玉龙&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp池州九华山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp重庆江北&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspD&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp大理荒草坝&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp丹东浪头&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp稻城亚丁&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大庆萨尔图&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大同云冈&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp达州河市&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp德令哈&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp迪庆香格里拉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp东营胜利&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp敦煌&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大连周水子&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function efgh() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                         <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspE&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp额济纳旗桃来&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp恩施许家坪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp二连浩特赛乌素&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspF&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp福建龙岩冠豸山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阜阳西关&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp抚远东极&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp富蕴&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp福州长乐&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspG&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp赣州黄金&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp高雄&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp格尔木&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp广元盘龙&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp广州白云&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp桂林两江&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp贵阳龙洞堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp固原六盘山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspH&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp哈尔滨太平&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp海口美兰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp海拉尔东山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp哈密&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp邯郸&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp杭州萧山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp汉中城固&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp河池金城江&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp合肥新桥&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp黑河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp恒春五里亭&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp衡阳南岳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp和田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp淮安涟水&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp怀化芷江&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp花莲&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp黄山屯溪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp花土沟&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp呼和浩特白塔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp惠州平潭&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function jklm() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                         <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspJ&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp佳木斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp嘉义&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp嘉峪关&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp揭阳潮汕&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp吉林二台子&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp济南遥墙&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp金昌金川&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp景德镇罗家&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp井冈山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp济宁曲阜&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp锦州湾&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp九江庐山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp九寨沟黄龙&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp鸡西兴凯湖&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspK&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp喀纳斯布尔津&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp康定&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp喀什&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp克拉玛依&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp库车龟兹&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp库尔勒&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp昆明长水&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspL&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp拉萨贡嘎&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp连云港白塔埠&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp荔波&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp丽江三义&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp临沧博尚&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp临汾乔李&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp林西&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp临沂沭埠岭&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp林芝米林&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp黎平&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp六盘水月照&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp柳州白莲&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp洛阳北郊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp泸州蓝田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp吕梁大武&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspM&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp芒市&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp满洲里西郊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp梅县长岗岌&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp绵阳南郊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp漠河古莲&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp牡丹江海浪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function nopqrs() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                         <td><p class="cur" onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspN&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp南昌昌北&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南充高坪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南竿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南京禄口&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南宁吴圩&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南沙永暑礁&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp南通兴东&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp南阳姜营&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp宁波栎社&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp宁蒗泸沽湖&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspP&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp屏东&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp普洱思茅&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspQ&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp且末&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp七美&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp青岛流亭&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp庆阳西峰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp秦皇岛山海关&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp齐齐哈尔三家子&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp泉州晋江&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp衢州&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspR&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp日照山字河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspS&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp三亚凤凰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp上海虹桥&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp上海浦东&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp上饶三清山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp尚义&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp韶关&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp神农架红坪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp神农架红坪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp深圳宝安&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp石河子花园&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp石家庄正定&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp十堰武当山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function twx() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspT&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北松山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北桃园&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台东丰年&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台南&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp太原武宿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台中&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台中清泉岗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp台州路桥&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp唐山三女河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp腾冲驼峰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp天津滨海&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp天水麦积山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp通化&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp通辽&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp铜仁凤凰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp吐鲁番交河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspW&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp潍坊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp威海大水泊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp文山普者黑&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp温州龙湾&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp乌海&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp武汉天河&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp乌兰察布集宁&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp乌兰浩特依勒力特&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp乌鲁木齐地窝堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp无锡硕放&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp武夷山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp梧州长洲岛&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspX&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp厦门高崎&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp香港赤鱲角&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp襄阳刘集&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp西安咸阳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp西昌青山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp锡林浩特&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp邢台褡裢&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp兴义万峰林&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp西宁曹家堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp忻州五台山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp西双版纳嘎洒&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp徐州观音&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function yz() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspY&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp盐城南洋&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp扬州泰州&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp延吉朝阳川&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp烟台蓬莱&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp宜宾菜坝&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp宜昌三峡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp伊春林都&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp宜春明月山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp银川河东&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp营口兰旗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伊宁&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp义乌&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp永州零陵&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp右旗巴丹吉林&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp榆林榆阳&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp运城关公&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp玉树巴塘&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbspZ&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp张家口宁远&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp张掖甘州&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp湛江&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp昭通&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp郑州新郑&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp中卫沙坡头&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-table">\n' +
+            '                    <tr>\n' +
+            '                        <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><input type="button" value="&nbsp舟山普陀山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp珠海金湾&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp遵义新舟&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp左旗巴彦浩特&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function interHot() {
+        var str='<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p class="cur" onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '<div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp香港赤鱲角&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp首尔金浦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp首尔仁川&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北松山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北桃园&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp东京成田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp东京羽田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp新加坡樟宜&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp澳门&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp曼谷(素万那普)&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大阪关西&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大阪伊丹&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp胡志明市新山一&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp马尼拉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp名古屋中部/新特丽亚&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伦敦盖特威克&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伦敦希思罗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp吉隆坡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp釜山金海&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp悉尼金斯福德·史密斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp法兰克福&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp温哥华&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp巴黎－奥利&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp巴黎戴高乐&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp纽约肯尼迪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp纽约拉瓜迪亚&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp洛杉矶&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科伏努科沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科谢诺梅杰沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科多莫杰多沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Asia() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp香港赤鱲角&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp东京成田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp东京羽田&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北松山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp台北桃园&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp首尔金浦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp首尔仁川&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp新加坡樟宜&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp曼谷(素万那普)&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp吉隆坡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大阪关西&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp大阪伊丹&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp澳门&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp雅加达苏加诺-哈达&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp胡志明市新山一&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp马尼拉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp登巴萨巴厘岛&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp名古屋中部/新特丽亚&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp普吉岛普吉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp河内内拜&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp马累&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp迪拜&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp釜山金海&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp加德满都&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp高雄&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp福冈&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp金边&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp新德里德里&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp济州岛济州&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伊斯坦布尔阿塔图尔克&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp乌兰巴托&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp孟买&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Europe() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp伦敦盖特威克&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伦敦希思罗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp巴黎－奥利&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp巴黎戴高乐&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp法兰克福&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科伏努科沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科谢诺梅杰沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp莫斯科多莫杰多沃&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp罗马菲乌米奇诺&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp荷兰阿姆斯特丹斯史基浦(西霍普)&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp米兰利纳特&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp米兰马尔本萨&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp慕尼黑&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp斯德哥尔摩&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp柏林舍讷费尔德&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp柏林泰格尔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp曼彻斯特&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp马德里&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp苏黎世&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp布鲁塞尔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp哥本哈根&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp赫尔辛基&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp巴塞罗那&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp雅典&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp爱丁堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp伯明翰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp纽卡斯尔威廉斯敦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp日内瓦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp圣彼得堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp基辅&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp布达佩斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp汉堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp布拉格&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function America() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp纽约肯尼迪&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp纽约拉瓜迪亚&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp洛杉矶&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp旧金山&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp温哥华&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp芝加哥奥黑尔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp多伦多皮尔逊&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp西雅图塔科马&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp华盛顿杜勒斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp波士顿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp底特律大都会&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp休斯敦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp蒙特利尔特鲁多&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbspAishalton夏威夷&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp塞班&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp圣保罗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp渥太华&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp墨西哥城&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp拉斯维加斯麦卡伦&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp卡尔加里CALGARY&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp布宜诺斯艾利斯埃塞萨皮斯塔里尼部长&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Africa() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp开罗&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp约翰内斯堡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp开普敦开普顿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp内罗毕乔莫·肯雅塔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp罗安达二月四日&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp毛里求斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp达累斯萨拉姆尼雷尔&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp亚的斯亚贝巴博乐&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿克拉科托卡&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp德班&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp哈拉雷&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Oceania() {
+        var str = '<div class="city-head">\n' +
+            '                <table>\n' +
+            '                    <tr class="clearfix">\n' +
+            '                        <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p class="cur" onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                        <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>\n' +
+            '            <div id="city-list">\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp悉尼金斯福德·史密斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp墨尔本&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp奥克兰&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp布里斯班&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp阿德莱德&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp珀斯&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                        <td><input type="button" value="&nbsp惠灵顿&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '                <table class="city-Table">\n' +
+            '                    <tr>\n' +
+            '                        <td><input type="button" value="&nbsp堪培拉&nbsp" class="city-name" onclick="getCityName(this.value)"></td>\n' +
+            '                    </tr>\n' +
+            '                </table>\n' +
+            '            </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function getCityName(cityName) {
+        document.getElementById("dddd").innerText= cityName;
+        alert(cityName.innerHTML);
+    }
+</script>
+</html>

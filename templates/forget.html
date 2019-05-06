@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="userInfo.js"></script>
+</head>
+<body>
+<div class="header">
+    <div class="logo">
+        <a href="homepage.html">
+            <img src="image/logo.jpg" width="200px" alt="logo">
+        </a>
+    </div>
+    <ul class="menu">
+        <li class="top-menu-item top-menu-noclick">
+            <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd" ><span>航班查询</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a href="flight_num.html">按航班号</a></p>
+                    <p><a href="takeoff_land.html">按起降地</a></p>
+                </div>
+            </div>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd"><span>个人中心</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <ul>
+        <li class="login">
+            <a href="login.html" class="logbtn">登录/注册</a>
+        </li>
+    </ul>
+</div>
+<div class="mainimage">
+    <div class="image">
+        <img src="image/page1.jpg" width="100%">
+    </div>
+    <div>
+        <p class="title">找回密码</p>
+    </div>
+    <div class="login-window">
+        <p><input type="text" id="userName" class="input-window" placeholder="请输入您的用户名" maxlength="25" size="60" autofocus></p>
+        <p><input class="login-btn" id="login" type="button" onclick="send()" value="找回密码"></p>
+    </div>
+</div>
+</body>
+<script>
+    var localPage = "forget.html";
+    function send() {
+        var username = document.getElementById("userName").value;
+        var jsonData = JSON.stringify({
+            username:username,
+        })
+        var xhr = AjaxFunction();
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                var responseData = JSON.parse(xhr.responseText);
+                if(responseData.status == "success!");{
+                    alert("修改密码的链接已发送至您的邮箱，请及时查收！");
+                }
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/modifyPasswordEmail",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+    }
+</script>
+</html>

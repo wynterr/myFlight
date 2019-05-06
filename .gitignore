@@ -1,0 +1,8 @@
+/.vscode
+errorlog
+/spider1
+/spider2
+/spider/img_file/*.png
+/__pycache__
+*.md
+*.pdf

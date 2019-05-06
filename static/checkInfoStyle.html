@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>检查登录/注册信息</title>
+    <script>
+        var url = location.search;
+        var op = 0;
+        var user = "";
+        var pwd = "";
+        var email = "";
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);//substr()方法返回从参数值开始到结束的字符串；
+            strs = str.split("&");
+            if(strs[0].split(":")[1] == "1"){
+                op = 1;
+            }
+            else{
+                op = 2;
+            }
+            user = strs[1].split(":")[1];
+            pwd = strs[2].split(":")[1];
+            email = strs[3].split(":")[1];
+        }
+        if(op == 1){
+            if(user == "" || pwd == ""){
+                alert("您的用户名或密码为空！");
+                window.location.href = "login.html";
+            }
+            else if(user.length < 6 || pwd.length < 6){
+                alert("您的用户名或密码长度不正确");
+                window.location.href = "login.html";
+            }
+            else{
+                var test = /([a-z]|[A-Z]|[0-9]){6,13}/;
+                if(test.test(user) && test.test(pwd)){
+                    checkValid();
+                }
+                else{
+                    alert("您的用户名或密码含有非法字符！");
+                    window.location.href = "login.html";
+                }
+            }
+        }
+        else{
+            if(user == "" || pwd == "" || email == ""){
+                alert("注册信息不能为空！");
+                window.location.href = "register.html";
+            }
+            else if(user.length < 6 || pwd.length < 6){
+                alert("您的用户名或密码长度不正确");
+                window.location.href = "register.html";
+            }
+            else{
+                var test = /([a-z]|[A-Z]|[0-9]){6,13}/;
+                var testemail = /\w+@\w+(\.\w{2,3})*\.\w{2,3}/;
+                if(test.test(user) && test.test(pwd) && testemail.test(email)){
+                    checkValid();
+                }
+                else if(!test.test(user) || !test.test(pwd)){
+                    alert("您的用户名或密码含有非法字符！");
+                    window.location.href = "register.html";
+                }
+                else{
+                    alert("您输入的邮箱不存在！");
+                    window.location.href = "register.html";
+                }
+            }
+        }
+        function checkValid(){
+            window.location.href = "checkInfoValid.html?op:" + op + "&user:" + user + "&pwd:" + pwd + "&email:" + email;
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

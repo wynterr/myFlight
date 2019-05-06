@@ -1,0 +1,15 @@
+certifi==2019.3.9
+chardet==3.0.4
+Click==7.0
+fake-useragent==0.1.11
+Flask==1.0.2
+idna==2.8
+itsdangerous==1.1.0
+Jinja2==2.10
+lxml==4.3.3
+MarkupSafe==1.1.1
+Pillow==5.2.0
+pytesseract==0.2.6
+requests==2.21.0
+urllib3==1.24.1
+Werkzeug==0.15.1

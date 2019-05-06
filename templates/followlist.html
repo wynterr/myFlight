@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>航班助手</title>
+    <script src="userInfo.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="header">
+    <div class="logo">
+        <a href="homepage.html">
+            <img src="image/logo.jpg" width="200px" alt="logo">
+        </a>
+    </div>
+    <ul class="menu">
+        <li class="top-menu-item top-menu-noclick" id="HOME">
+            <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd" ><span>航班查询</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                    <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                </div>
+            </div>
+        </li>
+        <li class="top-menu-item top-menu-noclick">
+            <a class="menu-hd"><span>个人中心</span></a>
+            <div class="menu-dropdown">
+                <div class="menu-dropdown-inner">
+                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="mainimage">
+    <div class="image">
+        <img src="image/page1.jpg" width="100%">
+    </div>
+    <div id="follow-num" class="follow-num">
+
+    </div>
+    <div id="followlist" class="followlist">
+
+    </div>
+</div>
+</body>
+<script>
+    var localPage = "followlist.html";
+    var responseData;
+    function ajaxFunction(){
+        var xmlHttp;
+        try{ // Firefox, Opera 8.0+, Safari
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch (e){
+            try{// Internet Explorer
+                xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+            }
+            catch (e){
+                try{
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e){}
+            }
+        }
+
+        return xmlHttp;
+    }
+    window.onload = function(){
+        var jsonData = JSON.stringify({
+            username:get_cookie("user"),
+            token:deleteMark(get_cookie("token")),
+        })
+        var xhr = ajaxFunction();
+        var str = "";
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                responseData = JSON.parse(xhr.responseText);
+                var length = responseData.length;
+                if(length != 0){
+                    str='<table class="follow-table">'+'<tr class="follow-list-hd"><th>关注航班号</th><th>关注时间</th></tr>';
+                }
+                if(length != 0){
+                    document.getElementById("follow-num").innerHTML="<p>您共关注了"+length+"趟航班</p>";
+                }
+                else{
+                    document.getElementById("follow-num").innerHTML="<p class='not'>您尚未关注任何航班！</p>";
+                }
+                for(var i = 0;i < length;i++){
+                    str = str+'<tr class="followListTab">'+
+                            '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].flightCode))+'</td>'+
+                            '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].date))+'</td>'+
+                            '<td><input type="button" class="btn" value="取消关注" onclick="cancel(JSON.stringify(responseData['+i+'].flightCode),JSON.stringify(responseData['+i+'].date))"></td>'
+                            '</tr>';
+                }
+                str+='</table>'
+                document.getElementById("followlist").innerHTML=str;
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+    }
+    function deleteMark(str){
+        var newStr;
+        newStr = str.replace(/"/g,'',);
+        return newStr;
+    }
+    function deleteMark1(str){
+        var newStr;
+        newStr = str.replace(/"/g,'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp',);
+        return newStr;
+    }
+    function cancel(flightCode,date){
+        var jsonData1 = JSON.stringify({
+            username:get_cookie("user"),
+            token:deleteMark(get_cookie("token")),
+            flightCode:deleteMark(flightCode),
+            date:deleteMark(date),
+        })
+        var xhr1 = ajaxFunction();
+        xhr1.onreadystatechange = function(){
+            if(xhr1.readyState==4){
+                var responseData1 = JSON.parse(xhr1.responseText);
+                if(responseData1.status == "success!"){
+                    document.cookie = deleteMark(flightCode)+ "_" + deleteMark(date) +"=0";
+                    window.location.href = "followlist.html";
+                }
+                else{
+                    alert("取消关注失败！");
+                }
+            }
+        }
+        xhr1.open("POST","http://114.115.134.119:5000/beta/unfocus",true);
+        xhr1.setRequestHeader("Content-type","application/json");
+        xhr1.send(jsonData1);
+    }
+</script>
+</html>

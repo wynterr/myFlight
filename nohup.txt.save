@@ -1,0 +1,6 @@
+
+nohup: 忽略输入
+  File "main.py", line 115
+    if (!success):
+        ^
+SyntaxError: invalid syntax
