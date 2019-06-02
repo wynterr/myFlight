@@ -10,6 +10,7 @@ regUrl = 'http://' + IP + ':5000/beta/register';
 loginUrl = 'http://' + IP + ':5000/beta/login';
 focusUrl = 'http://' + IP + ':5000/beta/focus';
 unfocusUrl = 'http://' + IP + ':5000/beta/unfocus';
+loUrl = 'http://' + IP + ':5000/beta/logout';
 listUrl = 'http://' + IP + ':5000/beta/getFocusedFlights';
 smeUrl = 'http://' + IP + ':5000/beta/modifyPasswordEmail';
 guUrl = 'http://' + IP + ':5000/beta/getUser';
@@ -18,7 +19,8 @@ afUrl = 'http://' + IP + ':5000/beta/addFlight';
 tmfUrl = 'http://' + IP + ':5000/beta/modifyFlight';
 tdfUrl = 'http://' + IP + ':5000/beta/deleteFlight';
 tsfUrl = 'http://' + IP + ':5000/beta/searchFlight';
-
+sebfUrl = 'http://' + IP + ':5000/beta/sendEmailByFlight';
+guiUrl = 'http://' + IP + ':5000/beta/getUserInfo';
 def testSBFN():    #search by flight number
     body = {
         'op':1,
@@ -78,8 +80,8 @@ def testDIBU():  #search for detailed imformation by url
 
 def testReg():  #test register
     body = {
-        'username' : 'xwttt',
-        'password' : '11223344',
+        'username' : 'test0519',
+        'password' : '111222333444',
         'email' : '786311041@qq.com'
     }
     headers = {'content-type': "application/json"}
@@ -89,8 +91,8 @@ def testReg():  #test register
 
 def testLogin():
     body = {
-        'username' : 'testUser222',
-        'password' : '11223344'
+        'username' : 'test0519',
+        'password' : '111222333444'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = loginUrl,headers = headers,data = json.dumps(body));
@@ -99,10 +101,11 @@ def testLogin():
 
 def testFocus():
     body = {
-        'username' : 'testUser',
-        'token' : 'lgqJrGxZt6',
+        'username' : 'test0519',
+        'token' : 'tMQeVzhfx3',
         'flightCode':'CA1234',
-        'date':'20190414'
+        'date':'20190414',
+        'identity':0
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = focusUrl,headers = headers,data = json.dumps(body));
@@ -111,8 +114,8 @@ def testFocus():
 
 def testUnfocus():
     body = {
-        'username' : 'testUser',
-        'token' : 'lgqJrGxZt6',
+        'username' : 'test0519',
+        'token' : 'tMQeVzhfx3',
         'flightCode':'CA1234',
         'date':'20190414'
     }
@@ -123,8 +126,8 @@ def testUnfocus():
 
 def testGetList():
     body = {
-        'username' : 'testUser',
-        'token' : 'lgqJrGxZt6'
+        'username' : 'test0519',
+        'token' : 'tMQeVzhfx3'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = listUrl,headers = headers,data = json.dumps(body));
@@ -133,16 +136,28 @@ def testGetList():
 
 def testSendModifyEmail():
     body = {
-        'username' : 'xwttt'
+        'username' : 'test0519'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = smeUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
     print(data)
 
+def testLogOut():
+    body = {
+        'username' : 'test0519',
+        'token' : 'tMQeVzhfx3'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = loUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
 def testGetUser():
     body = {
-        'username' : 'test001'
+        'adminname':'admin',
+        'token':'justtestt',
+        'username' : 'test0519'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = guUrl,headers = headers,data = json.dumps(body));
@@ -166,36 +181,38 @@ def testAddFlight():
     body = {
         'adminname':'admin',
         'token':'justtest',
-        'airline':'中国国际航空',
-        'flightCode':'CA911',
-        'date':'20180823',
-        'planTakeOff':'13:50',
-        'actualTakeOff':'13:55',
-        'departure':'北京首都机场',
-        'planArrival':'17:10',
-        'actualArrival':'17:01',
-        'destination':'斯德哥尔摩阿兰达机场',
-        'currentStatus':'到达'
+        'corp_name':'中国国际航空',
+        'flight_code':'CA911',
+        'flight_date':'20180823',
+        'dep_time_plan':'13:50',
+        'dep_time_act':'13:55',
+        'dep_airp_name':'北京首都机场',
+        'dep_airp_code':'PEK',
+        'arri_time_plan':'17:10',
+        'arri_time_act':'17:01',
+        'arri_airp_name':'斯德哥尔摩阿兰达机场',
+        'arri_airp_code':'ARN',
+        'flight_status':'到达'
 }
     headers = {'content-type': "application/json"}
     res = requests.post(url = afUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
     print(data)
 
-def testModiftFlight():
+def testModifytFlight():
     body = {
         'adminname':'admin',
         'token':'justtest',
-        'airline':'中国国际航空',
-        'flightCode':'CA911',
-        'date':'20180823',
-        'planTakeOff':'13:50',
-        'actualTakeOff':'13:55',
-        'departure':'北京首都机场',
-        'planArrival':'17:10',
-        'actualArrival':'17:02',
-        'destination':'斯德哥尔摩阿兰达机场',
-        'currentStatus':'到达'
+        'corp_name':'中国国际航空',
+        'flight_code':'CA911',
+        'flight_date':'20180823',
+        'dep_time_plan':'13:50',
+        'dep_time_act':'13:55',
+        'dep_airp_code':'PEK',
+        'arri_time_plan':'17:10',
+        'arri_time_act':'17:02',
+        'arri_airp_code':'ARN',
+        'flight_status':'到达'
 }
     headers = {'content-type': "application/json"}
     res = requests.post(url = tmfUrl,headers = headers,data = json.dumps(body));
@@ -206,8 +223,10 @@ def testDeleteFlight():
     body = {
         'adminname' : 'admin',
         'token':'justtest',
-        'flightCode':'CA911',
-        'date':'20180823'
+        'flight_code':'CA911',
+        'flight_date':'20180823',
+        'dep_airp_code':'PEK',
+        'arri_airp_code':'ARN'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = tdfUrl,headers = headers,data = json.dumps(body));
@@ -218,8 +237,8 @@ def testSearchFlight():
     body = {
         'adminname' : 'admin',
         'token':'justtest',
-        'flightCode':'CA911',
-        'date':'20180823'
+        'flight_code':'CC444',
+        'flight_date':'20190513'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = tsfUrl,headers = headers,data = json.dumps(body));
@@ -236,9 +255,30 @@ def testGetFocus():
     res = requests.post(url = listUrl,headers = headers,data = json.dumps(body));
     data = json.loads(res.text)
     print(data)
-    
+
+def testSendByFlight():
+    body = {
+        'adminname' : 'admin',
+        'token':'justtest',
+        'flight_code':'CA911',
+        'flight_date':'20190420'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = sebfUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
+
+def testGetUserInfo():
+    body = {
+        'adminname' : 'admin',
+        'token':'justtest',
+        'username':'asd130530'
+    }
+    headers = {'content-type': "application/json"}
+    res = requests.post(url = guiUrl,headers = headers,data = json.dumps(body));
+    data = json.loads(res.text)
+    print(data)
 if (__name__ == '__main__'):
-   #testReg(); 
    #testLog();
    #testSBFN();
    #testSBC()
@@ -251,10 +291,13 @@ if (__name__ == '__main__'):
     #testGetList()
     #testUnfocus()
     #testSendModifyEmail()
+    #testLogOut()
     #testGetUser()
     #testSendEmail()
     #testAddFlight()
-    #testModiftFlight()
+    #testModifytFlight()
     #testDeleteFlight()
     #testSearchFlight()
-    testGetFocus()
+    #testGetFocus()
+    #testSendByFlight()
+    testGetUserInfo()

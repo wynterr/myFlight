@@ -38,4 +38,3 @@ if __name__ == "__main__":
     print(r.get_balc())
     result = r.rec(r".\auth_code_imgs\auth_code_2019-04-21 15-31-46.647262.png")
     print(result)
-    # print(r.refund(result.request_id))

@@ -117,5 +117,5 @@ class Citiesoutbyarea(UpdateAirpData):
 if __name__ == '__main__':
     # CountryCodes().print_data()
     # CitiesData().print_data()
-    # CitiesinbyAZ().print_data()
-    Citiesoutbyarea().update_data()
+    CitiesinbyAZ().print_data()
+    # Citiesoutbyarea().update_data()

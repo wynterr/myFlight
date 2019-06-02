@@ -1,0 +1,3 @@
+[INFO    ] 2019-06-02 20:54:09,234 spider.py[line:685](get_base_info) 查询基本信息，查询条件：('PEK', 'SHA', '20190602')
+[WARNING ] 2019-06-02 20:54:22,999 spider.py[line:295](_wait_thread) 本次查询共有 4724 张图片出现503错误
+[INFO    ] 2019-06-02 20:54:23,806 spider.py[line:688](get_base_info) 查询条件：(('PEK', 'SHA', '20190602'),), 查询信息：code:11, message:ok

@@ -18,7 +18,7 @@ class Config(object):  # 创建配置，用类
             'func': '__main__:check',
             'args': None,
             'trigger': 'interval',
-            'seconds': 120,
+            'seconds': 3600,
         }
     ]
 app = Flask(__name__,static_url_path='',root_path='/root/flight')
@@ -33,7 +33,7 @@ def hello():
 
 @app.route("/admin")
 def adminPage():
-    return app.send_static_file('HomePage.html')
+    return app.send_static_file('AdmHomePage.html')
 
 @app.route("/beta/modifyPassword/<username>/<token>",methods = ['POST','GET'])
 @cross_origin()
@@ -231,7 +231,8 @@ def focus():
             allData = spd.get_base_info(data['flightCode'],data['date'])
             if (len(allData) < 1):
                 raise(Exception("Flight doesn't exist!"))
-            success = db.focus(data['username'],data['flightCode'],data['date'],allData[0]['flight_status'])
+            success = db.focus(data['username'],data['flightCode'],data['date'],\
+                        allData[0]['flight_status'],data['identity'])
             if (success == 0):
                 raise(Exception("Error occured when focusing the flight!"))
             else:
@@ -262,6 +263,28 @@ def unfocus():
                 msg = {}
                 msg['status'] = 'success!'
                 return json.dumps(msg)
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error:%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/getUserInfo",methods = ['POST'])
+@cross_origin()
+def getUserInfo():
+    try:
+        print("getUserInfo",request.json)
+        data = request.json
+        db.dbConnect()
+        username = (data['adminname'] if 'adminname' in data else data['username']) 
+        logedIn = db.isLogedIn(username,data['token'])
+        if (logedIn == 0):
+            raise(Exception("User hasn't loged in!"))
+        else:
+            email = db.get_user_info(data['username'])
+            if (email == 0):
+                raise(Exception('User not found!'))
+            return json.dumps({'email':email})
     except Exception as e:
         print('Error:',e)
         error = {}
@@ -349,20 +372,18 @@ def manaLogin():
         print("ManaLogin",request.json)
         data = request.json
         db.dbConnect()
-        res = db.login(data['adminname'],data['password'])
+        res = db.login_mana(data['adminname'],data['password'])
         success = res['status']
         msg = {}
         msg['statusCode'] = success
         if (success == 0):
-            msg['status'] = 'Wrong username or password!'
-            return json.dumps(msg)
+            raise(Exception('Wrong username or password!'))
         elif (success == 1):
             msg['status'] = 'success!'
             msg['token'] = res['code']
             return json.dumps(msg)
         else:
-            msg['status'] = 'Unknown error!'
-            return json.dumps(msg)    
+            raise(Exception('Unknown error!'))   
     except Exception as e:
         print('Error:',e)
         error = {}
@@ -378,7 +399,7 @@ def manaLogout():
         db.dbConnect()
         logedIn = db.isLogedIn(data['adminname'],data['token'])
         if (logedIn == 0):
-            raise(Exception("User hasn't loged in!"))
+            raise(Exception("Manager hasn't loged in!"))
         else:
             success = db.logout(data['adminname'],data['token'])
             if (success == 0):
@@ -471,9 +492,14 @@ def addFlight():
         logedIn = db.isLogedIn(data['adminname'],data['token'])
         if (logedIn == 0):
             raise(Exception("Manager hasn't loged in!"))
+        '''
         success = db.add_flight(data['airline'],data['flightCode'],data['date'],data['planTakeOff'],\
                     data['actualTakeOff'],data['departure'],data['planArrival'],data['actualArrival'],\
                     data['destination'],data['currentStatus'])
+        '''
+        del data['adminname']
+        del data['token']
+        success = db.add_flight_detail(data)
         if (success == 0):
             raise(Exception("Unknown error when adding flight data!"))
         else:
@@ -496,9 +522,14 @@ def deleteFlight():
         logedIn = db.isLogedIn(data['adminname'],data['token'])
         if (logedIn == 0):
             raise(Exception("Manager hasn't loged in!"))
-        success = db.delete_flight(data['flightCode'],data['date'])
+        #success = db.delete_flight(data['flightCode'],data['date'])
+        del data['adminname']
+        del data['token']
+        success = db.delete_flight_detail(data)
         if (success == 0):
             raise(Exception("Unknown error when deleting flight data!"))
+        elif (success == 2):
+            raise(Exception("Flight doesn't exist."))
         else:
             msg = {}
             msg['status'] = 'success!'
@@ -519,9 +550,14 @@ def modifyFlight():
         logedIn = db.isLogedIn(data['adminname'],data['token'])
         if (logedIn == 0):
             raise(Exception("Manager hasn't loged in!"))
+        '''
         success = db.modify_flight(data['airline'],data['flightCode'],data['date'],data['planTakeOff'],\
                     data['actualTakeOff'],data['departure'],data['planArrival'],data['actualArrival'],\
                     data['destination'],data['currentStatus'])
+        '''
+        del data['adminname']
+        del data['token']
+        success = db.update_flight_detail(data)
         if (success == 0):
             raise(Exception("Unknown error when modifying flight data!"))
         else:
@@ -544,18 +580,59 @@ def searchFlight():
         logedIn = db.isLogedIn(data['adminname'],data['token'])
         if (logedIn == 0):
             raise(Exception("Manager hasn't loged in!"))
-        success = db.searchFlight(data['flightCode'],data['date'])
-        if (success == 0):
+        #success = db.searchFlight(data['flightCode'],data['date'])
+        del data['adminname']
+        del data['token']
+        success = db.search_flight_detail(data)
+        if (success['status'] != 1):
             raise(Exception("Unknown error when searching for flight data!"))
         else:
-            if (success is None):
+            if (success['value'] is None):
                 raise(Exception("No flight found!"))
+            keys = ['flight_code','flight_date','dep_airp_code','arri_airp_code','corp_name','shared_flight',\
+                    'dep_city','dep_airp_name','dep_time_plan','dep_time_pred','dep_time_act','local_dep_date_plan',\
+                    'local_dep_date_act','checkin_counter','dep_gate','dep_airp_weather','dep_airp_pm25','dep_airp_flow',\
+                    'arri_city','arri_airp_name','arri_time_plan','arri_time_pred','arri_time_act','local_arri_date_plan',\
+                    'local_arri_date_act','lug_turn','arri_gate','arri_airp_weather','arri_airp_pm25','arri_airp_flow',\
+                    'flight_status','ontime_rate','ave_ontime_rate','pre_flight','delay_time_tip','flight_distance',\
+                    'flight_dur_time','plane_type','plane_age','mid_airp_name','mid_airp_arri_time_plan',\
+                    'mid_airp_arri_time_pred','mid_airp_arri_time_act','local_mid_airp_arri_date_plan',\
+                    'local_mid_airp_arri_date_act','mid_airp_lug_turn','mid_airp_arri_gate','mid_airp_dep_time_plan',\
+                    'mid_airp_dep_time_pred','mid_airp_dep_time_act','local_mid_airp_dep_date_plan',\
+                    'local_mid_airp_dep_date_act','mid_airp_checkin_counter','mid_airp_dep_gate','mid_airp_weather',\
+                    'mid_airp_pm25','mid_airp_flow']
+            res = []
+            staticData = success['value']
+            for record in staticData:
+                flightData = {}
+                for i,key in enumerate(record):
+                    flightData[keys[i]] = record[i]
+                res.append(flightData)
+            print(res)
+            return json.dumps(res)
+
+    except Exception as e:
+        print('Error:',e)
+        error = {}
+        error['status'] = 'Error:%s'%str(e)
+        return json.dumps(error)
+
+@app.route("/beta/sendEmailByFlight",methods = ['POST'])
+@cross_origin()
+def sendEmailByFlight():
+    try:
+        print("sendEmailByFlight",request.json)
+        data = request.json
+        db.dbConnect()
+        logedIn = db.isLogedIn(data['adminname'],data['token'])
+        if (logedIn == 0):
+            raise(Exception("Manager hasn't loged in!"))
+        success = db.send_email_code(data['flight_code'],data['flight_date'])
+        if (success == 0):
+            raise(Exception("Unknown error when sending email to %s!"%data['flight_code']))
+        else:
             msg = {}
-            corresKey = ['airline','flightCode','date','planTakeOff','actualTakeOff','departure','planArrival',\
-                        'actualArrival','destination','currentStatus']
-            for i in range(len(success)):
-                msg[corresKey[i]] = success[i]
-            msg['date'] = msg['date'].strftime('%Y%m%d')
+            msg['status'] = 'success!'
             return json.dumps(msg)
     except Exception as e:
         print('Error:',e)
@@ -565,6 +642,7 @@ def searchFlight():
 
 def check():
     #db.send_warning_email()
+    db.send_information()
     time.sleep(randint(60,180))
 
 

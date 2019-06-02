@@ -12,6 +12,7 @@
     <script src="js/userInfo.js"></script>
     <script src="js/cityData.js"></script>
     <script>
+        document.cookie="notlogin=true";
         var localPage = "detialInfo.html";
         var responseData;
         var url = location.search;
@@ -208,7 +209,7 @@
     </script>
 </head>
 <body>
-<div id="particles-js">
+<div>
     <div class="main">
         <div class="header">
             <div class="logo">
@@ -218,10 +219,10 @@
             </div>
             <ul class="menu">
                 <li class="top-menu-item top-menu-noclick">
-                    <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                    <a href="homepage.html" class="menu-hd-info cur_pointer"><span>首页</span></a>
                 </li>
                 <li class="top-menu-item top-menu-noclick">
-                    <a class="menu-hd" ><span>航班查询</span></a>
+                    <a class="menu-hd-info" ><span>航班查询</span></a>
                     <div class="menu-dropdown">
                         <div class="menu-dropdown-inner">
                             <p><a href="flight_num.html">按航班号</a></p>
@@ -230,7 +231,7 @@
                     </div>
                 </li>
                 <li class="top-menu-item top-menu-noclick">
-                    <a class="menu-hd"><span>个人中心</span></a>
+                    <a class="menu-hd-info"><span>个人中心</span></a>
                     <div class="menu-dropdown">
                         <div class="menu-dropdown-inner">
                             <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
@@ -250,6 +251,12 @@
         <div id = "detailInfo" class = "detail">
 
         </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
+    <div class="river">
+
     </div>
 </div>
 <!-- scripts -->

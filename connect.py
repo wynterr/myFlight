@@ -38,7 +38,7 @@ class DataBase:
     #建立数据库连接
     def dbConnect(self):
         try:
-            self.connect = pymysql.connect(host=self.para['host'], port=self.para['port'], user=self.para['user'], passwd=self.para['password'], db=self.para['db'])
+            self.connect = pymysql.connect(host=self.para['host'], port=self.para['port'], user=self.para['user'], passwd=self.para['password'], db=self.para['db'],charset = 'utf8')
             self.cur = self.connect.cursor()
         except Exception as e:
             print(e)
@@ -158,6 +158,17 @@ class DataBase:
             print(e)
         return 0
 
+    #获取用户详细信息：邮箱，
+    def get_user_info(self,userID):
+        sql = 'select email from userMessage where userID = %s'
+        try:
+            self.cur.execute(sql,userID)
+            ret = self.cur.fetchone()[0]
+            return ret
+        except Exception as e:
+            print(e)
+        return 0
+
     #判断用户修改码是否有效
     def is_modifiable(self,userID,Code):
         sql = "select count(*) from userMessage where userID = %s and modifyCode = %s"
@@ -176,6 +187,9 @@ class DataBase:
     # 修改个人信息
     def updateMessage(self,userID,pwd):
         # print(args)
+        if(len(pwd) <6 or len(pwd)>13):
+            print('密码过短或过长')
+            return 0
         sql1 = "update userMessage set pwd = %s , modifyCode = '110' \
                where userID = %s "
 
@@ -193,10 +207,10 @@ class DataBase:
         return 0
 
     # 关注函数，成功插入返回1，失败返回0，账号未登录返回-1 时间数据如：2019-08-12
-    def focus(self,userID, flightID, f_date,current_status):
-        sql = "insert into map values(%s,%s,%s,%s)"
+    def focus(self,userID, flightID, f_date,current_status,identity:int):
+        sql = "insert into map values(%s,%s,%s,%s,%s,0)"
         try:
-            res = [userID, flightID, f_date,current_status]
+            res = [userID, flightID, f_date,current_status,identity]
             self.cur.execute(sql, res)
             self.connect.commit()
             print("关注建立成功")
@@ -204,8 +218,7 @@ class DataBase:
             print(e)
             return 0
         return 1
-
-    # 取消关注的航班
+     # 取消关注的航班
     def unfocus(self,userID, flightID, f_date):
         sql = "delete from map where userID = %s and flightID = %s and date = %s"
         try:
@@ -217,7 +230,6 @@ class DataBase:
             print(e)
             return 0
         return 1
-
     #获取关注列表,返回一个列表，每个元素是一个元组，为航班号和时间
     def getList(self,userID):
         sql2 = "select flightID ,date from map where userID = %s"
@@ -337,7 +349,61 @@ class DataBase:
         self.connect.commit()
         print(userID + '的提示邮件已发送,关注状态已修改')
 
+    # 检查航班时间，以便发送相关信息
+    def send_information(self):
+        current_day = datetime.datetime.now().strftime('%Y-%m-%d')
+        print(current_day)
+        #获取今天起飞且未被通知信息的关注记录
+        sql = "select map.userID,flightID,date,email , map.identity from map \
+            left JOIN  userMessage on map.userID = userMessage.userID\
+            where informed = 0 and date = '%s'"%current_day
+        print(sql)
+        try:
+            self.cur.execute(sql)
 
+            records = self.cur.fetchall()
+            print(1)
+            for record in records:  # [0]:userID  [1]:flightID,[2]:date [3]:email  [4]:identity []:
+                plan_date = record[2].strftime("%Y%m%d")
+
+                allData = Spider().get_base_info(record[1], plan_date)
+                plan_time =plan_date + ' 19:20'
+                plan_time = time.strptime(plan_time,"%Y%m%d %H:%M")
+                un_time = time.mktime(plan_time)  #转为时间戳
+                seconds = int(un_time - time.time())
+                print('time %d',seconds )
+                if(seconds <=0 ):  #已起飞
+                    if(record[4] == 2): #接机人
+                        content = '尊敬的航班助手用户 ' + record[0] + ' :您关注的航班 ：' + record[1] + '已经起飞，预计在' + allData['arri_time_act'] +'到达，更多信息，请登录航班助手查看'
+                        self.send_information_email(record[0],record[3],record[1],record[2],content)
+                elif(seconds <=14400):#间隔小于四小时,开始通知
+                    if (record[4] == 0):  # 乘客，
+                        content = '尊敬的航班助手用户 ' + record[0] + ' :您关注的航班 ：' + record[1] + '将于' + allData['dep_time_plan'] + '起飞，请提前规划好您的行程，更多信息，请登录航班助手查看'
+                    elif (record[4] == 1):  # 送机人
+                        content = '尊敬的航班助手用户 ' + record[0] + ' :您关注的航班 ：' + record[1] + '将于' + allData['dep_time_plan'] + '起飞，请提前规划好您的行程，更多信息，请登录航班助手查看'
+                    else:
+                        return 0
+                    self.send_information_email(record[0], record[3], record[1], record[2], content)
+        except Exception as e:
+            print(e)
+
+    #为某个客户发送提醒信息
+    def send_information_email(self,userID,email,flightID,time,content):
+        msg = MIMEText(content, 'plain', 'utf-8')
+        msg['Subject'] = "航班提醒"  #
+        msg['From'] = formataddr(["flight", self.para2['sender']])
+        msg['To'] = formataddr(["client", email])
+        self.mailConnect()
+        self.smtpObj.sendmail(self.para2['sender'], email, msg.as_string())
+
+        sql = 'update map set informed =1 where userID = %s and flightID = %s and date = %s'
+        try:
+            self.cur.execute(sql,[userID,flightID,time])
+            self.connect.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        return 0
 
     #管理员登录，
     def login_mana(self,userID,pwd):
@@ -376,8 +442,14 @@ class DataBase:
     #管理员模块，删除用户账号
     def delete_user(self,userID):
         sql = 'delete from userMessage where userID = %s '
+        sql2 = 'delete from map where userID = %s'
+        sql3 = 'delete from state where userID = %s'
+        # sql4 = 'delete from focus_records where userID = %s'
         try:
             self.cur.execute(sql,userID)
+            self.cur.execute(sql2, userID)
+            self.cur.execute(sql3, userID)
+            # self.cur.execute(sql4, userID)
             self.connect.commit()
             return 1
         except Exception as e:
@@ -455,6 +527,150 @@ class DataBase:
         except Exception as e:
             print(e)
         return 0
+
+    #根据字典，转换为字符串
+    def switch_to_list(self,dic):
+        cols = ''
+        values = ''
+        for key,value in dic.items():
+            if value != '--':
+                cols += key + ','
+                if isinstance(value, str):
+                    values += value.__repr__() + ','
+                else:
+                    values += str(value) + ','
+
+        return cols,values
+
+    #根据航班号发送预警邮件
+    def send_email_code(self,flightCode,f_date):
+        sql = """select map.userID,email from map 
+            left JOIN userMessage on userMessage.userID = map.userID
+            where flightID = %s and date = %s"""
+        try:
+            res = [flightCode,f_date]
+            self.cur.execute(sql,res)
+            user_list = self.cur.fetchall()
+            for record in user_list:
+                self.send_test_email(record[0],flightCode,f_date)
+            return 1
+        except Exception as e:
+            print(e)
+        return 0
+
+    #添加详细静态航班
+    def add_flight_detail(self,dic):
+        #转化日期格式
+        if ('flight_date' in dic.keys()):
+            t = dic['flight_date']
+            ttime = time.strptime(t, "%Y%m%d")
+            dic['flight_date'] = time.strftime('%Y-%m-%d', ttime)
+
+        # sql = "insert into map(%s) values(%s)"
+        cols,values = self.switch_to_list(dic)
+        # res = [cols[:-1], values[:-1]]
+        sql = "insert into flightdetail(%s) values(%s)"%(cols[:-1],values[:-1])
+        # print(res)
+        try:
+            self.cur.execute(sql)
+            self.connect.commit()
+            return 1
+        except Exception as e:
+            print(e)
+        return 0
+
+    #更新航班数据
+    def update_flight_detail(self,dic:dict):
+        sql = """update flightdetail set %s where flight_code = %s and flight_date = %s and dep_airp_code = %s and arri_airp_code = %s"""
+        sql2 = 'select flight_status from flightdetail where flight_code = %s and flight_date = %s and dep_airp_code = %s and arri_airp_code = %s'
+
+        if ('flight_date' in dic.keys()):
+            t = dic['flight_date']
+            ttime = time.strptime(t, "%Y%m%d")
+            dic['flight_date'] = time.strftime('%Y-%m-%d', ttime)
+
+
+        s_str = ''
+        for key,value in dic.items():  #将字典转化为 key = value,。。。的形式
+            if value!= '--':
+                s_str += key + '='
+                if isinstance(value, str):
+                    s_str += '\''+value + '\','
+                else:
+                    s_str += str(value) + ','
+
+
+        try:
+            # res = [s_str,dic['flight_code'] ,dic['flight_date']]
+            #获取原来状态
+            print('22')
+            self.cur.execute(sql2,[dic['flight_code'],dic['flight_date'],dic['dep_airp_code'],dic['arri_airp_code']])
+            print('11')
+            pre_status = self.cur.fetchone()[0]
+
+            #更新航班信息
+            sql = sql%(s_str[:-1],dic['flight_code'].__repr__() ,dic['flight_date'].__repr__(),dic['dep_airp_code'].__repr__(),dic['arri_airp_code'].__repr__())
+            print(sql)
+            self.cur.execute(sql)
+            self.connect.commit()
+
+            #比较
+            if( 'flight_status' in dic.keys()  and pre_status != dic['flight_status']):
+                self.send_email_code(dic['flight_code'],dic['flight_date'])
+
+            return 1
+        except  Exception as e:
+            print(e)
+        return 0
+
+    #删除某条航班
+    def delete_flight_detail(self,dic:dict):
+        sql = "delete from flightdetail where flight_code = %s and flight_date = %s and dep_airp_code = %s and arri_airp_code = %s"
+        #修改日期格式
+        if ('flight_date' in dic.keys()):
+            t = dic['flight_date']
+            ttime = time.strptime(t, "%Y%m%d")
+            dic['flight_date'] = time.strftime('%Y-%m-%d', ttime)
+
+        try:
+            res = [dic['flight_code'], dic['flight_date'],dic['dep_airp_code'],dic['arri_airp_code']]
+            self.cur.execute(sql,res)
+            change_lines = self.cur.rowcount
+            self.connect.commit()
+            if(change_lines >0):
+                return 1
+            return 2
+        except Exception as e:
+            print(e)
+        return 0
+
+    #查找
+    def search_flight_detail(self,dic:dict):
+        sql = "select * from flightdetail where %s"
+        ret = {}
+        if ('flight_date' in dic.keys()):
+            t = dic['flight_date']
+            ttime = time.strptime(t, "%Y%m%d")
+            dic['flight_date'] = time.strftime('%Y-%m-%d', ttime)
+
+        sql_str = ''
+        for key,value in dic.items():
+            sql_str += key +'='
+            if isinstance(value,str):
+                sql_str += value.__repr__() +' and '
+            else:
+                sql_str += str(value) + ' and '
+        try:
+            sql = sql%sql_str[:-4]
+            self.cur.execute(sql)
+            ret['value'] = list(self.cur.fetchall())
+            ret['status'] = 1
+            return ret
+        except Exception as e:
+            print(e)
+        ret['status'] = 0
+        return ret
+
     #
 # register(userID="yanhuia", pwd="12345", email="1129720379@qq.com")
 # login("yanhui6","12345")

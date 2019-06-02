@@ -9,25 +9,45 @@
     <link rel="stylesheet" media="screen" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/reset.css"/>
     <link rel="stylesheet" type="text/css" href="css/flightlist.css"/>
+    <link rel="stylesheet" href="css/mydate.css">
     <script src="js/userInfo.js"></script>
+    <script src="js/mydate.js"></script>
 </head>
 <body>
 <script>
+    document.cookie="flight_num=true";
+    document.cookie="notlogin=true";
     var localPage = "flight_num.html";
     var flightnum="1";
-    var date=new Date();
-    var dateString;
-    var responseData;
+    var today = new Date();
+    var dateStr = today.getDate();
+    var monthStr = today.getMonth() + 1;
+    var yearStr = today.getFullYear();
+    if(monthStr < 10){
+        monthStr = "0" + monthStr;
+    }
+    if(dateStr < 10){
+        dateStr  = "0" + dateStr;
+    }
+    var todayDate = yearStr + "/" + monthStr + "/" + dateStr;
     function send(){
         var op = 1;
         var a1 = document.getElementById("flightnum");
         var a2 = document.getElementById("date");
         flightnum = a1.value;
         date = a2.value;
-        dateString =date.toString();
-        dateString = dateString.replace(/-/g,'',);
+        var dateString =date.toString();
+        dateString = dateString.replace(/\//g,'',);
         setdate(dateString);
-        window.location.href = "flightInfo.html?op:" + op + "&flightCode:" + flightnum + "&cityFrom:" + "" + "&cityTo:" + "" + "&data:" + dateString;
+        if(flightnum == ""){
+            if(get_cookie("flight_num") == "true"){
+                emptyFlightNum();
+                setTimeout("empty()",1500);
+            }
+        }
+        else{
+            window.location.href = "flightInfo.html?op:" + op + "&flightCode:" + flightnum + "&cityFrom:" + "" + "&cityTo:" + "" + "&data:" + dateString;
+        }
     }
 </script>
 <div id="particles-js">
@@ -71,12 +91,20 @@
     </div>
     <div class="mainimage">
         <div class="flightNumWindow">
-            <p class="flightNum">航班号&nbsp:&nbsp</p>
-            <p><input id="flightnum" class="flightNumInput" type="text" placeholder="请输入航班号，如CA111" maxlength="10" size="20" autofocus></p>
-            <p class="date">出发日期&nbsp:&nbsp</p>
-            <p><input id="date" class="dateInput" type="date" placeholder="出发日期" maxlength="10" size="20"></p>
-            <p><input class="flightNumBtn" type="button" id="in" value="查询" onclick="send()"></p>
+            <p><input id="flightnum" class="flightNumInput" type="text" placeholder="请输入航班号，如CA111或1111" maxlength="10" size="32" autofocus></p>
+            <div class="date-window" id="date-window">
+                <p class="departureDate" id="departureDate">出发时间</p>
+                <div class="vertical"></div>
+                <input id="date" type="text" class="date" value="" readonly>
+            </div>
+            <div id="date-list" class="date-list">
+
+            </div>
+            <p class="flightNumBtn" id="in" onclick="send()">查询</p>
         </div>
+    </div>
+    <div id="hintWindow">
+
     </div>
 </div>
 <!-- scripts -->
@@ -84,11 +112,20 @@
 <script src="js/app.js"></script>
 <script>
     window.onload = function(){
+        if(document.getElementById("date").value == ""){
+            document.getElementById("date").value = todayDate;
+        }
         if(get_cookie("islogin") == 0){
             var str = '<li class="login">\n' +
                 '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
                 '            </li>';
             document.getElementById("login").innerHTML = str;
+        }
+        document.getElementById("date").onclick = function () {
+            MyDatePick();
+        }
+        document.onclick = function (){
+            MyDatePick.close();
         }
     }
 </script>

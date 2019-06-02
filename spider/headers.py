@@ -9,9 +9,12 @@ class Headers(object):
     """专门为spider提供headers的类"""
     def __init__(self):
         self.ua = UserAgent().random
-        # 获取基本信息和详细信息时的headers，第二个是，第三个是
+        self.ip1 = '%s.%s.%s.%s'%(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
+        self.ip2 = '%s.%s.%s.%s'%(random.randint(200, 255),random.randint(200, 255),random.randint(200, 255),random.randint(200, 255))
+        self.ip3 = "%s,%s"%(self.ip1,self.ip2)
+        # 获取基本信息和详细信息时的headers，
         self.headers1_default = {
-            "X-Forwarded-For":'%s.%s.%s.%s'%(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)),
+            "X-Forwarded-For":self.ip1,
             'Host': 'www.variflight.com',
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',

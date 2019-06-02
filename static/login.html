@@ -22,7 +22,7 @@
         </div>
         <ul class="menu">
             <li class="top-menu-item top-menu-noclick">
-                <a href="homePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
             </li>
             <li class="top-menu-item top-menu-noclick">
                 <a class="menu-hd" ><span>航班查询</span></a>
@@ -66,24 +66,27 @@
                 </div>
             </div>
             <div class="login-button">
-                <p onclick="login()">登录</p>
+                <p onclick="tologin()">登录</p>
             </div>
             <div>
-                <p class="remember"><input type="checkbox" id="remember">记住账号</p>
-                <p><a href="forget.html" class="forget">忘记密码？</a></p>
-                <p><a href="register.html" class="noAccount">还没有账号？快速注册</a></p>
+                <span class="remember"><input type="checkbox" id="remember">记住账号</span>
+                <span><a href="forget.html" class="forget">忘记密码？</a></span>
+                <span><a href="register.html" class="noAccount">还没有账号？快速注册</a></span>
             </div>
         </div>
     </div>
+        <div id="hintWindow">
+
+        </div>
     </div>
 </div>
 <!-- scripts -->
 <script src="js/particles.min.js"></script>
 <script src="js/app.js"></script>
 <script>
+    document.cookie="notlogin=true";
+    document.cookie="login=true";
     var localPage = "login.html";
-    var userName="";
-    var passWord="";
     var user=document.getElementById('userName');
     var pass=document.getElementById('pwd');
     var check=document.getElementById("remember");
@@ -94,20 +97,15 @@
     if(localUser!=""){
         check.setAttribute("checked","");
     }
-    function getUserName(userName){
-        this.userName=userName;
-    }
-    function getPassWord(passWord){
-        this.passWord=passWord;
-    }
-    function login() {
+    function tologin() {
         if (check.checked) {
             localStorage.setItem('user', user.value);
         } else {
             localStorage.setItem('user', '');
         }
         var op = 1;
-        window.location.href = "checkInfoStyle.html?op:" + op + "&user:" + user.value + "&pwd:" + pass.value  + "&email:" + "";
+        var str = "op:" + op + "&user:" + user.value + "&pwd:" + pass.value  + "&email:" + "";
+        checkInfoStyle(str);
     }
 </script>
 </body>

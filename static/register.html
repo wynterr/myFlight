@@ -65,28 +65,28 @@
             <div class="login-center clearfix">
                 <div class="login-center-img"><img src="img/name.png"/></div>
                 <div class="login-center-input">
-                    <input type="text" value=""  id="username" placeholder="请输入您的用户名" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的用户名'"/>
+                    <input type="text" value=""  id="username" placeholder="请输入6-13位字母或数字" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的用户名'"/>
                     <div class="login-center-input-text">用户名</div>
                 </div>
             </div>
             <div class="login-center clearfix">
                 <div class="login-center-img"><img src="img/password.png"/></div>
                 <div class="login-center-input">
-                    <input type="password" value="" id="pwd" placeholder="请输入您的密码" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
+                    <input type="password" value="" id="pwd" placeholder="请输入6-13位字母或数字" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
                     <div class="login-center-input-text">密码</div>
                 </div>
             </div>
             <div class="login-center clearfix">
                 <div class="login-center-img"><img src="img/password.png"/></div>
                 <div class="login-center-input">
-                    <input type="password" value="" id="pwdAgain" placeholder="请再次输入密码" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
+                    <input type="password" value="" id="pwdAgain" placeholder="请再次输入密码" onfocus="this.placeholder=''" onblur="this.placeholder='请再次输入密码'"/>
                     <div class="login-center-input-text">确认密码</div>
                 </div>
             </div>
             <div class="login-center clearfix">
                 <div class="login-center-img"><img src="img/email.png"/></div>
                 <div class="login-center-input">
-                    <input type="email" value="" id="email" placeholder="请输入您的邮箱" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
+                    <input type="email" value="" id="email" placeholder="请输入您的邮箱" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的邮箱'"/>
                     <div class="login-center-input-text">邮箱</div>
                 </div>
             </div>
@@ -95,11 +95,17 @@
             </div>
         </div>
     </div>
+    <div id="hintWindow">
+
+    </div>
 </div>
 <!-- scripts -->
 <script src="js/particles.min.js"></script>
 <script src="js/app.js"></script>
 <script>
+    document.cookie="notlogin=true";
+    document.cookie="register=true";
+    document.cookie="samepwd=true";
     var localPage = "register.html";
     function register(){
         var op = 2;
@@ -108,10 +114,20 @@
         var pwdAgain = document.getElementById("pwdAgain").value;
         var email = document.getElementById("email").value;
         if(pwd == pwdAgain){
-            window.location.href = "checkInfoStyle.html?op:" + op + "&user:" + username + "&pwd:" + pwd+ "&email:" + email;
+            var str = "op:" + op + "&user:" + username + "&pwd:" + pwd+ "&email:" + email;
+            checkInfoStyle(str);
         }
         else{
-            alert("两次密码不一致！");
+            if(get_cookie("samepwd") == "true"){
+                var str = '<div class="hint" id="hint">\n' +
+                    '            <p>两次密码不一致</p>\n' +
+                    '        </div>';
+                document.getElementById("hintWindow").innerHTML=str;
+                hintStyle();
+                setTimeout("empty()",1500);
+                document.cookie = "samepwd=false";
+                setTimeout("takeTrue('samepwd')",1500);
+            }
         }
     }
 </script>

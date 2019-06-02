@@ -49,19 +49,24 @@
         </div>
     </div>
     <div class="mainimage">
-        <div>
-            <p class="title">修改密码</p>
+        <div class="changepwd">
+            <span class="title">修改密码</span>
         </div>
         <div class="change-window">
             <p class="confirm-email">请确认您绑定的邮箱仍在使用</p>
-            <p><input class="confirm-btn" id="login" type="button" onclick="send()" value="确认修改"></p>
+            <input class="confirm-btn" id="login" type="button" onclick="send()" value="确认修改">
         </div>
+    </div>
+    <div id="hintWindow">
+
     </div>
 </div>
 <!-- scripts -->
 <script src="js/particles.min.js"></script>
 <script src="js/app.js"></script>
 <script>
+    document.cookie="notlogin=true";
+    document.cookie="changepwd=true";
     window.onload = function(){
         if(get_cookie("islogin") == 0){
             var str = '<li class="login">\n' +
@@ -72,24 +77,37 @@
     }
     var localPage = "changepwd.html";
     function send() {
-        var jsonData = JSON.stringify({
-            username:DeleteMark(get_cookie("user")),
-        })
-        var xhr = AjaxFunction();
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState==4){
-                var responseData = JSON.parse(xhr.responseText);
-                if(responseData.status == "success!");{
-                    alert("修改密码的链接已发送至您的邮箱，请及时查收！");
-                    alert("为确保账号安全，请您重新登录！");
-                    logout();
-                    window.location.href = "homepage.html";
+        if(get_cookie("islogin") == 1){
+            var jsonData = JSON.stringify({
+                username:DeleteMark(get_cookie("user")),
+            })
+            var xhr = AjaxFunction();
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState==4){
+                    var responseData = JSON.parse(xhr.responseText);
+                    if(responseData.status == "success!");{
+                        if(get_cookie("changepwd") == "true"){
+                            var str = '<div class="hint5" id="hint">\n' +
+                                '            <p>修改密码的链接已发送至您的邮箱，请及时查收！为确保账号安全，请您重新登录！</p>\n' +
+                                '        </div>';
+                            document.getElementById("hintWindow").innerHTML=str;
+                            hintStyle();
+                            setTimeout("logout()",1700);
+                            setTimeout("skip('homepage.html')",2700);
+                        }
+                    }
                 }
             }
+            xhr.open("POST","http://114.115.134.119:5000/beta/modifyPasswordEmail",true);
+            xhr.setRequestHeader("Content-type","application/json");
+            xhr.send(jsonData);
         }
-        xhr.open("POST","http://114.115.134.119:5000/beta/modifyPasswordEmail",true);
-        xhr.setRequestHeader("Content-type","application/json");
-        xhr.send(jsonData);
+       else{
+            if(get_cookie("notlogin") == "true"){
+                notLogin();
+                setTimeout("empty()",1500);
+            }
+        }
     }
 </script>
 </body>

@@ -1,0 +1,6 @@
+ÊµÀıÒ»¸öocr = OCR()
+print(ocr.test('./test/31.png'))
+# tf.reset_default_graph()
+
+imglist = ['./test/1.png','./test/2.png','./test/3.png']
+print(ocr.test_all(imglist))

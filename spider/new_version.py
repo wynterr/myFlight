@@ -6,7 +6,7 @@
 import requests
 import re
 import json
-from myPrint import myPrint
+from .myPrint import myPrint
 from lxml import etree
 class Spider():
     def __init__(self):

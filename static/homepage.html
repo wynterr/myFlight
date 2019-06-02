@@ -56,11 +56,15 @@
 
 		</div>
 	</div>
+	<div id="hintWindow">
+
+	</div>
 </div>
 <!-- scripts -->
 <script src="js/particles.min.js"></script>
 <script src="js/app.js"></script>
 <script>
+	document.cookie="notlogin=true";
     var localPage = "homepage.html";
     var responseData;
     window.onload = function(){
@@ -72,7 +76,7 @@
             document.getElementById("welcome").innerHTML='<a href="login.html"><p id="welcomeTo" class="please">请您尽快登录以享受更多服务</p></a>';
         }
         if(get_cookie("islogin") == 1){
-            document.getElementById("welcome").innerHTML='<p id="welcomeTo" class="welcomeTo">欢迎使用航班助手</p>';
+            document.getElementById("welcome").innerHTML='<span id="welcomeTo" class="welcomeTo">欢迎使用航班助手</span>';
             var jsonData = JSON.stringify({
                 username:get_cookie("user"),
                 token:deleteMark(get_cookie("token")),
@@ -93,7 +97,7 @@
             xhr.setRequestHeader("Content-type","application/json");
             xhr.send(jsonData);
         }
-    }
+	}
     function deleteMark(str){
         var newStr;
         newStr = str.replace(/"/g,'',);
