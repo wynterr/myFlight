@@ -1,84 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>航班信息</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="jquery.js"></script>
-    <script src="userInfo.js"></script>
-    <script>
-        var localPage = "flightInfo.html";
-        var url = location.search; //获取url中"?"符后的字串URLDecoder.decode(url, "UTF-8");
-        var op = 0;
-        var flightCode;
-        var cityFrom;
-        var cityTo;
-        var date;
-        if (url.indexOf("?") != -1) {
-            var str = url.substr(1);//substr()方法返回从参数值开始到结束的字符串；
-            strs = str.split("&");
-            if(strs[0].split(":")[1] == "1"){
-                op = 1;
-            }
-            else{
-                op = 2;
-            }
-            flightCode = strs[1].split(":")[1];
-            cityFrom = strs[2].split(":")[1];
-            cityTo = strs[3].split(":")[1];
-            date = strs[4].split(":")[1];
-        }
-    </script>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="css/flightlist.css"/>
+    <script src="js/userInfo.js"></script>
+    <script src="js/cityData.js"></script>
 </head>
 <body>
-<div class="header">
-    <div class="logo">
-        <a href="homepage.html">
-            <img src="image/logo.jpg" width="200px" alt="logo">
-        </a>
-    </div>
-    <ul class="menu">
-        <li class="top-menu-item top-menu-noclick">
-            <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd" ><span>航班查询</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a href="flight_num.html">按航班号</a></p>
-                    <p><a href="takeoff_land.html">按起降地</a></p>
-                </div>
-            </div>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd"><span>个人中心</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
-                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
-                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a>
-                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
-                </div>
-            </div>
-        </li>
-    </ul>
-    <ul id="login">
-
-    </ul>
-</div>
-<div class="mainimage">
-    <div class="image">
-        <img src="image/page1.jpg" width="100%">
-    </div>
-    <div id="data-num" class="data-num">
-
-    </div>
-    <div id="data" class="data">
-
-    </div>
-</div>
-</body>
 <script>
+    var localPage = "flightInfo.html";
+    var url = location.search; //获取url中"?"符后的字串URLDecoder.decode(url, "UTF-8");
+    var op = 0;
+    var flightCode;
+    var cityFrom;
+    var cityTo;
+    var date;
+    if (url.indexOf("?") != -1) {
+        var str = url.substr(1);//substr()方法返回从参数值开始到结束的字符串；
+        strs = str.split("&");
+        if(strs[0].split(":")[1] == "1"){
+            op = 1;
+        }
+        else{
+            op = 2;
+        }
+        flightCode = strs[1].split(":")[1];
+        cityFrom = strs[2].split(":")[1];
+        cityTo = strs[3].split(":")[1];
+        date = strs[4].split(":")[1];
+    }
+</script>
+<div>
+    <div class="main">
+        <div class="header header-info">
+            <div class="logo">
+                <a href="homepage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick">
+                    <a href="homepage.html" class="menu-hd-info cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd-info" ><span>航班查询</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a href="flight_num.html">按航班号</a></p>
+                            <p><a href="takeoff_land.html">按起降地</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd-info"><span>个人中心</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                            <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                            <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a>
+                            <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul id="login">
+
+            </ul>
+        </div>
+        <div class="mainimage">
+            <div id="data-num" class="data-num">
+
+            </div>
+            <div id="flight-info-hd">
+
+            </div>
+            <div id="data" class="data">
+                <span class="sorry">抱歉，没有找到您输入的航班信息</span>
+                <img src="img/sorry.jpg" width="200px" height="200px" class="sorryImg">
+            </div>
+        </div>
+        <div id="hintWindow">
+
+        </div>
+    </div>
+    <div id="identity">
+
+    </div>
+    <div id="identityChoiceWindow">
+
+    </div>
+    <div class="river">
+
+    </div>
+</div>
+<!-- scripts -->
+<script src="js/particles.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+    document.cookie="notlogin=true";
+    document.cookie="flightInfo=true";
+    var Identity = 0;
     var responseData;
     var length = 0;
     function ajaxFunction(){
@@ -101,73 +128,93 @@
         return xmlHttp;
     }
     window.onload = function(){
-            if(get_cookie("islogin") == 0){
-                var str1 = '<li class="login">\n' +
-                    '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
-                    '            </li>';
-                document.getElementById("login").innerHTML = str1;
-            }
-            var jsonData = JSON.stringify({
-                op:op,
-                flightCode:flightCode,
-                cityFrom:cityFrom,
-                cityTo:cityTo,
-                date:date,
-            })
-            setdate(date);
-            var xhr = ajaxFunction();
-            var str = "";
-            xhr.onreadystatechange = function(){
-                if(xhr.readyState==4){
-                    var i = 0;
-                    responseData = JSON.parse(xhr.responseText);
+        if(get_cookie("islogin") == 0){
+            var str1 = '<li class="login">\n' +
+                '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str1;
+        }
+        var jsonData = JSON.stringify({
+            op:op,
+            flightCode:flightCode,
+            cityFrom:cityFrom,
+            cityTo:cityTo,
+            date:date,
+        })
+        setdate(date);
+        var xhr = ajaxFunction();
+        var str = "";
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                var i = 0;
+                responseData = JSON.parse(xhr.responseText);
+                if(JSON.stringify(responseData) == "[]"){
+
+                }
+                else{
                     length = responseData.length;
                     if(length > 0){
-                        document.getElementById("data-num").innerHTML="<p>共"+length+"条航班信息</p>";
+                        document.getElementById("data-num").innerHTML="<p class='num'>共"+length+"条航班信息</p>";
                     }
                     else{
-                        document.getElementById("data-num").innerHTML="<p>共0条航班信息</p>";
+                        document.getElementById("data-num").innerHTML="<p class='num'>共0条航班信息</p>";
                     }
-                    str=str+'<table class="data-table">'+'<tr class="flight-data-hd"><th>所属航空公司</th><th>航班号</th><th>计划起飞</th><th>实际起飞</th><th>出发地</th><th>计划到达</th><th>实际到达</th><th>到达地</th><th>状态</th></tr>';
+                    str='<div class="flight-info-hd">\n' +
+                        '                    <p class="head1">所属航空公司</p>\n' +
+                        '                    <p class="head2">航班号</p>\n' +
+                        '                    <p class="head3">计划起飞</p>\n' +
+                        '                    <p class="head4">实际起飞</p>\n' +
+                        '                    <p class="head5">出发地</p>\n' +
+                        '                    <p class="head6">计划到达</p>\n' +
+                        '                    <p class="head7">实际到达</p>\n' +
+                        '                    <p class="head8">到达地</p>\n' +
+                        '                    <p class="head9">状态</p>\n' +
+                        '                    <p class="head10">订制</p>\n' +
+                        '                </div>';
+                    document.getElementById("flight-info-hd").innerHTML=str;
+                    str="";
                     for(i = 0;i<length;i++){
-                        var info_url = JSON.stringify(responseData[i].flight_detailed_info_url);
-                        str = str+'<tr class="flighyInfoTab">'+
-                            '<td>'+deleteMark(JSON.stringify(responseData[i].corp_name))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].flight_code))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].dep_time_plan))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].dep_time_act))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].dep_airp))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].arri_time_plan))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].arri_time_act))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].arri_airp))+'</td>'+
-                            '<td class="flight-data">'+deleteMark(JSON.stringify(responseData[i].flight_status))+'</td>'+
-                            '<td><input type="button" value="详细信息" class="btn" onclick=detail(JSON.stringify(responseData['+ i +'].flight_detailed_info_url))></td>';
-                                var followInfo = deleteMark1(JSON.stringify(responseData[i].flight_code)) + "_" + date;
-                                if(get_cookie(followInfo) == 0){
-                                    str+='<td><input id="follow'+i+'" type="button" value="关注航班" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')"></td>';
-                                }
-                                else{
-                                    str+='<td><input id="follow'+i+'" type="button" value="已关注" class="btn" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')"></td>';
-                                }
-                                str+='</tr>';
+                        str+='<div class="everyFlight" onclick=detail(JSON.stringify(responseData['+ i +'].flight_detailed_info_url))>\n' +
+                            '                    <p class="flightInfo1">'+deleteMark(JSON.stringify(responseData[i].corp_name))+'</p>\n' +
+                            '                    <p class="flightInfo2">'+deleteMark(JSON.stringify(responseData[i].flight_code))+'</p>\n' +
+                            '                    <p class="flightInfo3">'+deleteMark(JSON.stringify(responseData[i].dep_time_plan))+'</p>\n' +
+                            '                    <p class="flightInfo4">'+deleteMark(JSON.stringify(responseData[i].dep_time_act))+'</p>\n' +
+                            '                    <p class="flightInfo5">'+deleteMark(JSON.stringify(responseData[i].dep_airp))+'</p>\n' +
+                            '                    <p class="flightInfo6">'+deleteMark(JSON.stringify(responseData[i].arri_time_plan))+'</p>\n' +
+                            '                    <p class="flightInfo7">'+deleteMark(JSON.stringify(responseData[i].arri_time_act))+'</p>\n' +
+                            '                    <p class="flightInfo8">'+deleteMark(JSON.stringify(responseData[i].arri_airp))+'</p>\n' +
+                            '                    <p class="flightInfo9">'+deleteMark(JSON.stringify(responseData[i].flight_status))+'</p>\n';
+                        str+='</div>';
+                        var followInfo = deleteMark1(JSON.stringify(responseData[i].flight_code)) + "_" + date;
+                        if(get_cookie(followInfo) == 0){
+                            str+='<p class="flightInfo10" id="follow'+i+'" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')">关注</p>\n';
+                        }
+                        else{
+                            str+='<p class="flightInfo10" id="follow'+i+'" onclick="follow(JSON.stringify(responseData['+i+'].flight_code),'+i+')">已关注</p>\n';
+                        }
                     }
-                    str=str+'</table>';
                     document.getElementById("data").innerHTML=str;
                 }
             }
-            xhr.open("POST","http://114.115.134.119:5000/beta/byFlightNumber",true);
-            xhr.setRequestHeader("Content-type","application/json");
-            xhr.send(jsonData);
-
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/byFlightNumber",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
     }
     function deleteMark(str){
         var newStr;
-        newStr = str.replace(/"/g,'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp',);
+        newStr = str.replace(/"/g,'',);
         return newStr;
     }
     function deleteMark1(str){
         var newStr;
         newStr = str.replace(/"/g,'',);
+        return newStr;
+    }
+    function deleteMark2(str){
+        var newStr;
+        newStr = str.replace(/"/g,'\'',);
+        newStr = newStr.replace(/ /g,'',);
         return newStr;
     }
     function detail(detail){
@@ -175,43 +222,109 @@
     }
     function follow(flightcode,i){
         if(get_cookie("islogin") == 0){
-            alert("您尚未登录！");
+            if(get_cookie("flightInfo") == "true"){
+                var str = '<div class="hint" id="hint">\n' +
+                    '            <p>您尚未登录</p>\n' +
+                    '        </div>';
+                document.getElementById("hintWindow").innerHTML=str;
+                hintStyle();
+                setTimeout("empty()",1200);
+                document.cookie = "flightInfo=false";
+                setTimeout("takeTrue('flightInfo')",1200);
+            }
         }
         else{
-            var Data = JSON.stringify({
-                username:get_cookie("user"),
-                token:deleteMark1(get_cookie("token")),
-                flightCode:deleteMark1(flightcode),
-                date:get_cookie("date"),
-            })
-            var xhr1 = ajaxFunction();
-            xhr1.onreadystatechange = function(){
-                if(xhr1.readyState==4){
-                    var responseData1 = JSON.parse(xhr1.responseText);
-                    if(responseData1.status == "success!"){
-                        alert("关注成功");
-                        document.cookie = deleteMark1(flightcode)+"_" + get_cookie("date") + "=1";
-                        document.getElementById("follow"+i).value = "已关注";
-                    }
-                    else if(responseData1.status== "ErrorError occured when focusing the flight!"){
-                        alert("您以关注过该航班");
-                    }
-                   else{
-                       alert("关注航班失败！");
-                    }
-                }
-            }
-            xhr1.open("POST","http://114.115.134.119:5000/beta/focus",true);
-            xhr1.setRequestHeader("Content-type","application/json");
-            xhr1.send(Data);
+            toChoose(flightcode,i);
         }
+    }
+    function toChoose(flightcode,i){
+        var str1='<div class="identityWindow">\n' +
+            '         </div>';
+        var str2 =  '            <div class="identityChoice" id="identityChoice">\n' +
+                '<p class="pleaseChooseIdentity">请选择您的身份</p>'+
+            '                <input type="radio" class="opportunityBtn" name="identity" checked onclick="identity(0)">\n' +
+                '<p class="opportunity">乘机人</p>'+
+            '                <input type="radio" class="pickUpBtn" name="identity" onclick="identity(1)">\n' +
+                '<p class="pickUp">送机人</p>'+
+            '                <input type="radio" class="deliverBtn" name="identity" onclick="identity(2)">\n' +
+                '<p class="deliver">接机人</p>'+
+            '                <p onclick="cancelIdentity()" class="confirm">取消</p>\n' +
+            '                <p onclick="sendFollow('+deleteMark2(flightcode)+','+i+')" class="cancel">确定</p>\n' +
+            '            </div>\n'
+        document.getElementById("identity").innerHTML=str1;
+        document.getElementById("identityChoiceWindow").innerHTML=str2;
+        identityStyle();
     }
     function deleteMark1(str){
         var newStr;
         newStr = str.replace(/"/g,'',);
         return newStr;
     }
+    function identity(a){
+        Identity = a;
+    }
+    function cancelIdentity() {
+        var str='';
+        document.getElementById("identity").innerHTML=str;
+        document.getElementById("identityChoiceWindow").innerHTML=str;
+    }
+    function sendFollow(flightcode,i){
+        cancelIdentity();
+        var Data = JSON.stringify({
+            username:get_cookie("user"),
+            token:deleteMark1(get_cookie("token")),
+            flightCode:deleteMark1(flightcode),
+            date:get_cookie("date"),
+            identity:Identity,
+        })
+        var xhr1 = ajaxFunction();
+        xhr1.onreadystatechange = function(){
+            if(xhr1.readyState==4){
+                var responseData1 = JSON.parse(xhr1.responseText);
+                if(responseData1.status == "success!"){
+                    if(get_cookie("flightInfo") == "true"){
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>关注成功</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        document.cookie = "flightInfo=false";
+                        setTimeout("takeTrue('flightInfo')",1200);
+                    }
+                    document.cookie = deleteMark1(flightcode)+"_" + get_cookie("date") + "=1";
+                    document.getElementById("follow"+i).innerText="已关注";
+                }
+                else if(responseData1.status== "ErrorError occured when focusing the flight!"){
+                    if(get_cookie("flightInfo") == "true"){
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>您以关注过该航班</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        document.cookie = "flightInfo=false";
+                        setTimeout("takeTrue('flightInfo')",1200);
+                    }
+                }
+                else{
+                    if(get_cookie("flightInfo") == "true"){
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>关注航班失败</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        document.cookie = "flightInfo=false";
+                        setTimeout("takeTrue('flightInfo')",1200);
+                    }
+                }
+            }
+        }
+        xhr1.open("POST","http://114.115.134.119:5000/beta/focus",true);
+        xhr1.setRequestHeader("Content-type","application/json");
+        xhr1.send(Data);
+    }
 </script>
-<script>
-</script>
+</body>
 </html>

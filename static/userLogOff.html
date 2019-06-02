@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>用户管理/注销用户</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="cssAdm/style.css">
+    <link rel="stylesheet" type="text/css" href="cssAdm/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="cssAdm/flightlist.css"/>
+    <script src="jsAdm/userInfo.js"></script>
+</head>
+<body>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="AdmHomePage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="AdmHomePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>用户管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toUserLogOff()">注销用户</a></p>
+                            <p><a class="clickBtn" onclick="toUserPushMes()">消息推送</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>航班管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toFlightPush()">消息推送</a></p>
+                            <p><a class="clickBtn" onclick="toAddFlight()">新增航班</a></p>
+                            <p><a class="clickBtn" onclick="toDeleteFlight()">删除航班</a></p>
+                            <p><a class="clickBtn" onclick="toModifyFlight()">修改航班</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul>
+                <li id="login">
+
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="mainimage">
+        <div class="LogOffWindow">
+            <div class="userLogOff">
+                <input id="userName" type="text" placeholder="请输入要注销的用户名" class="userLogOffInput">
+            </div>
+            <div class="confirmLogOffWindow">
+                <p class="confirmInquiry" onclick="inquiry()">查询</p>
+            </div>
+        </div>
+        <div id="userInfoWindow">
+
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
+</div>
+<!-- scripts -->
+<script src="jsAdm/particles.min.js"></script>
+<script src="jsAdm/app.js"></script>
+<script>
+    document.cookie="Admlogout=true";
+    document.cookie="Admnotlogin=true";
+    document.cookie="Admuserlogoff=true";
+    window.onload = function () {
+        if(get_cookie("Admislogin") == 0){
+            var str = '<li class="login">\n' +
+                '                <a href="AdmLogin.html" class="logbtn">登录</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+        if(get_cookie("Admislogin") == 1){
+            var str = '<li class="login">\n' +
+                '                    <a class="logOffBtn" onclick="toAdmLogOff()">&nbsp&nbsp登出&nbsp&nbsp</a>\n' +
+                '                </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+    }
+    function inquiry(){
+        if(get_cookie("Admislogin") == 1){
+            var user = document.getElementById("userName");
+            if(user.value == ""){
+                if(user.value == ""){
+                    if(get_cookie("Admuserlogoff") == "true"){
+                        document.cookie='Admuserlogoff=false';
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>您输入的用户名为空</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        setTimeout("takeTrue('Admuserlogoff')",1200);
+                    }
+                }
+            }
+            else{
+                var xhr = AjaxFunction();
+                var jsonData1 = JSON.stringify({
+                    adminname:get_cookie("Admuser"),
+                    token:DeleteMark(get_cookie("Admtoken")),
+                    username:user.value,
+                })
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState==4){
+                        var responseData = JSON.parse(xhr.responseText);
+                        if(JSON.stringify(responseData) == "[]"){
+                            if(get_cookie("Admuserlogoff") == "true"){
+                                document.cookie='Admuserlogoff=false';
+                                var str = '<div class="hint" id="hint">\n' +
+                                    '            <p>该用户名不存在</p>\n' +
+                                    '        </div>';
+                                document.getElementById("hintWindow").innerHTML=str;
+                                hintStyle();
+                                setTimeout("empty()",1200);
+                                setTimeout("takeTrue('Admuserlogoff')",1200);
+                            }
+                        }
+                        else{
+                            var str = '<div class="userInfoWindow">\n' +
+                                '            <table class="userTable">\n' +
+                                '                <tr>\n' +
+                                '                    <th class="userInfohd">用户ID</th>\n' +
+                                '                    <th class="userInfohd">用户邮箱</th>\n' +
+                                '                </tr>\n' +
+                                '                <tr>\n' +
+                                '                    <td class="userInfo">'+responseData.userID+'</td>\n' +
+                                '                    <td class="userInfo">'+responseData.email+'</td>\n' +
+                                '                </tr>\n' +
+                                '            </table>\n' +
+                                '            <p class="confirmLogOff" onclick="logOffUser(\''+user.value+'\')">确认注销</p>\n' +
+                                '        </div>';
+                            document.getElementById("userInfoWindow").innerHTML=str;
+                        }
+                    }
+                }
+                xhr.open("POST","http://114.115.134.119:5000/beta/getUser",true);
+                xhr.setRequestHeader("Content-type","application/json");
+                xhr.send(jsonData1);
+            }
+        }
+        else{
+            if(get_cookie("Admnotlogin") == "true"){
+                notLogin();
+                setTimeout("empty()",1200);
+            }
+        }
+    }
+    function logOffUser(username) {
+        var jsonData2 = JSON.stringify({
+            adminname:get_cookie("Admuser"),
+            token:DeleteMark(get_cookie("Admtoken")),
+            username:username,
+        })
+        var xhr = AjaxFunction();
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                var responseData2 = JSON.parse(xhr.responseText);
+                if(responseData2.status == "success!"){
+                    if(get_cookie("Admuserlogoff") == "true"){
+                        document.cookie='Admuserlogoff=false';
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>注销成功</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("skip('userLogOff.html')",800);
+                    }
+                }
+                else{
+                    if(get_cookie("Admuserlogoff") == "true"){
+                        document.cookie='Admuserlogoff=false';
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>注销失败</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        setTimeout("takeTrue('Admuserlogoff')",1200);
+                    }
+                }
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/deleteUser",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData2);
+    }
+</script>
+</body>
+</html>

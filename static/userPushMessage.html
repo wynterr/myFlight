@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>用户管理/消息推送</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="cssAdm/style.css">
+    <link rel="stylesheet" type="text/css" href="cssAdm/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="cssAdm/flightlist.css"/>
+    <script src="jsAdm/userInfo.js"></script>
+</head>
+<body>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="AdmHomePage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="AdmHomePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>用户管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toUserLogOff()">注销用户</a></p>
+                            <p><a class="clickBtn" onclick="toUserPushMes()">消息推送</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>航班管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toFlightPush()">消息推送</a></p>
+                            <p><a class="clickBtn" onclick="toAddFlight()">新增航班</a></p>
+                            <p><a class="clickBtn" onclick="toDeleteFlight()">删除航班</a></p>
+                            <p><a class="clickBtn" onclick="toModifyFlight()">修改航班</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul>
+                <li id="login">
+
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="mainimage">
+        <div class="userMessPushWindow">
+            <div class="user">
+                <input id="user" type="text" placeholder="请输入要查询的用户名" class="userInquire">
+            </div>
+            <div class="confirmInquire">
+                <p class="confirmLogOff" onclick="inquire()">查询</p>
+            </div>
+        </div>
+        <div id="follow-num" class="follow-num">
+
+        </div>
+        <div id="followlist" class="followlist">
+
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
+</div>
+<!-- scripts -->
+<script src="jsAdm/particles.min.js"></script>
+<script src="jsAdm/app.js"></script>
+<script>
+    document.cookie="Admnotlogin=true";
+    document.cookie="Admlogout=true";
+    document.cookie="Admpushmessage=true";
+    var  responseData;
+    var  responseData2;
+    var user = document.getElementById("user");
+    window.onload = function () {
+        if(get_cookie("Admislogin") == 0){
+            var str = '<li class="login">\n' +
+                '                <a href="AdmLogin.html" class="logbtn">登录</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+        if(get_cookie("Admislogin") == 1){
+            var str = '<li class="login">\n' +
+                '                    <a class="logOffBtn" onclick="toAdmLogOff()">&nbsp&nbsp登出&nbsp&nbsp</a>\n' +
+                '                </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+    }
+    function inquire(){
+        if(user.value == ""){
+            if(get_cookie("Admpushmessage") == "true"){
+                document.cookie='Admpushmessage=false';
+                var str = '<div class="hint" id="hint">\n' +
+                    '            <p>您输入的用户名为空</p>\n' +
+                    '        </div>';
+                document.getElementById("hintWindow").innerHTML=str;
+                hintStyle();
+                setTimeout("empty()",1200);
+                setTimeout("takeTrue('Admpushmessage')",1200);
+            }
+        }
+        else{
+            var xhr = AjaxFunction();
+            var jsonData1 = JSON.stringify({
+                adminname:get_cookie("Admuser"),
+                token:DeleteMark(get_cookie("Admtoken")),
+                username:user.value,
+            })
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState==4){
+                    responseData = JSON.parse(xhr.responseText);
+                    if(JSON.stringify(responseData) == "[]"){
+                        if(get_cookie("Admpushmessage") == "true"){
+                            document.cookie='Admpushmessage=false';
+                            var str = '<div class="hint" id="hint">\n' +
+                                '            <p>该用户不存在</p>\n' +
+                                '        </div>';
+                            document.getElementById("hintWindow").innerHTML=str;
+                            hintStyle();
+                            setTimeout("empty()",1200);
+                            setTimeout("takeTrue('Admpushmessage')",1200);
+                        }
+                    }
+                    else{
+                        var xhr2 = AjaxFunction();
+                        xhr2.onreadystatechange = function(){
+                            var str = "";
+                            if(xhr2.readyState==4){
+                                responseData2 = JSON.parse(xhr2.responseText);
+                                var length = responseData2.length;
+                                if(length != 0){
+                                    str='<table class="follow-table">'+'<tr><th class="follow-list-hd">关注航班号</th><th class="follow-list-hd">关注时间</th></tr>';
+                                }
+                                if(length > 0){
+                                    document.getElementById("follow-num").innerHTML="<span>该用户共关注了"+length+"趟航班</span>";
+                                }
+                                else{
+                                    document.getElementById("follow-num").innerHTML="<span class='not'>该用户尚未关注任何航班！</span>";
+                                }
+                                for(var i = 0;i < length;i++){
+                                    str = str+'<tr class="followListTab">'+
+                                        '<td class="follow">'+deleteMark1(JSON.stringify(responseData2[i].flightCode))+'</td>'+
+                                        '<td class="follow">'+deleteMark1(JSON.stringify(responseData2[i].date))+'</td>'+
+                                        '<td><input type="button" class="btn" value="发送通知" onclick="send('+i+')"></td>'+
+                                    '</tr>';
+
+                                }
+                                str+='</table>'
+                                document.getElementById("followlist").innerHTML=str;
+                            }
+                        }
+                        xhr2.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+                        xhr2.setRequestHeader("Content-type","application/json");
+                        xhr2.send(jsonData1);
+                    }
+                }
+            }
+            xhr.open("POST","http://114.115.134.119:5000/beta/getUser",true);
+            xhr.setRequestHeader("Content-type","application/json");
+            xhr.send(jsonData1);
+        }
+
+    }
+    function deleteMark1(str){
+        var newStr;
+        newStr = str.replace(/"/g,'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp',);
+        return newStr;
+    }
+    function send(i) {
+        var flightCode = responseData2[i].flightCode;
+        var date = responseData2[i].date;
+        var xhr = AjaxFunction();
+        var jsonData = JSON.stringify({
+            adminname:get_cookie("Admuser"),
+            token:DeleteMark(get_cookie("Admtoken")),
+            username:user.value,
+            flightCode:flightCode,
+            date:date,
+        })
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState==4){
+                var responseData3 = JSON.parse(xhr.responseText);
+                if(responseData3.status == "success!"){
+                    if(get_cookie("Admpushmessage") == "true"){
+                        document.cookie='Admpushmessage=false';
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>发送成功</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        setTimeout("takeTrue('Admpushmessage')",1200);
+                    }
+                }
+                else{
+                    if(get_cookie("Admpushmessage") == "true"){
+                        document.cookie='Admpushmessage=false';
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>发送失败</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        setTimeout("takeTrue('Admpushmessage')",1200);
+                    }
+                }
+            }
+        }
+        xhr.open("POST","http://114.115.134.119:5000/beta/sendEmail",true);
+        xhr.setRequestHeader("Content-type","application/json");
+        xhr.send(jsonData);
+    }
+</script>
+</body>
+</html>

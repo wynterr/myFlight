@@ -1,20 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>航班助手</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="userInfo.js"></script>
+    <meta charset="utf-8">
+    <title>起降地查询</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="css/flightlist.css"/>
+    <link rel="stylesheet" href="css/mydate.css">
+    <script src="js/userInfo.js"></script>
+    <script src="js/cityData.js"></script>
+    <script src="js/mydate.js"></script>
 </head>
-
 <body>
 <script>
+    document.cookie="dep_city=true";
+    document.cookie="arrive_city=true";
+    document.cookie="notlogin=true";
+    var today = new Date();
+    var dateStr = today.getDate();
+    var monthStr = today.getMonth() + 1;
+    var yearStr = today.getFullYear();
+    if(monthStr < 10){
+        monthStr = "0" + monthStr;
+    }
+    if(dateStr < 10){
+        dateStr  = "0" + dateStr;
+    }
+    var todayDate = yearStr + "/" + monthStr + "/" + dateStr;
     var localPage = "takeoff_land.html";
     var fromCity;
     var toCity;
     var date=new Date();
     var dateString;
-    var responseData;
     function send(){
         var op = 2;
         var a1 = document.getElementById("departure");
@@ -22,71 +42,1261 @@
         var a3 = document.getElementById("date");
         fromCity = a1.value;
         toCity = a2.value;
-        date = a3.value;
-        dateString =date.toString();
-        dateString = dateString.replace(/-/g,'',);
-        setdate(dateString);
-        window.location.href = "flightInfo.html?op:" + op + "&flightCode:" + "" + "&cityFrom:" + fromCity + "&cityTo:" + toCity + "&data:" + dateString
+        if(fromCity == ""){
+            if(get_cookie("dep_city")== "true"){
+                emptyDepCity();
+                setTimeout("empty()",1500);
+            }
+        }
+        else if(toCity == ""){
+            if(get_cookie("arrive_city")== "true"){
+                emptyArriveCity();
+                setTimeout("empty()",1500);
+            }
+        }
+        else{
+            fromCity = fromCity.split("(");
+            fromCity = fromCity[1].split(")")[0];
+            toCity = toCity.split("(");
+            toCity = toCity[1].split(")")[0];
+            date = a3.value;
+            dateString =date.toString();
+            dateString = dateString.replace(/\//g,'',);
+            setdate(dateString);
+            window.location.href = "flightInfo.html?op:" + op + "&flightCode:" + "" + "&cityFrom:" + fromCity + "&cityTo:" + toCity + "&data:" + dateString;
+        }
     }
 </script>
-<div class="header">
-    <div class="logo">
-        <a href="homepage.html">
-            <img src="image/logo.jpg" width="200px" alt="logo">
-        </a>
-    </div>
-    <ul class="menu">
-        <li class="top-menu-item top-menu-noclick">
-            <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd"><span>航班查询</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a href="flight_num.html">按航班号</a></p>
-                    <p><a href="takeoff_land.html">按起降地</a></p>
-                </div>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="homepage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
             </div>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a href="personal.html" class="menu-hd"><span>个人中心</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
-                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
-                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
-                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
-                </div>
-            </div>
-        </li>
-    </ul>
-    <ul id="login">
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>航班查询</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                            <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>个人中心</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                            <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                            <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                            <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul id="login">
 
-    </ul>
-</div>
-<div class="mainimage">
-    <div class="image">
-        <img src="image/page1.jpg" width="100%">
+            </ul>
+        </div>
     </div>
-    <div class="takeOffWindow">
-        <p class="departure">出发地&nbsp:&nbsp</p>
-        <p><input id="departure" type="text" class="departureInput" placeholder="请输入出发地 如PEK" maxlength="10" size="20"></p>
-        <p class="arrive">到达地&nbsp:&nbsp</p>
-        <p><input id="arrive" type="text" class="arriveInput" placeholder="请输入到达地 如SHA" maxlength="10" size="20"></p>
-        <p class="date">出发日期&nbsp:&nbsp</p>
-        <p><input id="date" type="date" class="dateInput" placeholder="出发日期" size="20"></p>
-        <p><input type="button" class="takeOffBtn" id="in" value="查询" onclick="send()"></p>
+    <div class="mainimage">
+        <div class="takeOffWindow">
+            <div class="city-window">
+                <div>
+                    <p><input id="departure" type="text" class="departureCity" placeholder="出发城市" maxlength="10" onfocus="hot()" onblur="Blur1()"></p>
+                </div>
+                <div class="arrow"><img src="img/arrow.png" onclick="swap()"></div>
+                <div>
+                    <p><input id="arrive" type="text" class="arriveCity" placeholder="到达城市" maxlength="10" onfocus="hot()" onblur="Blur2()"></p>
+                </div>
+            </div>
+            <div class="date-window" id="date-window">
+                <p class="departureDate" id="departureDate">出发时间</p>
+                <div class="vertical"></div>
+                <input id="date" type="text" class="date" value="" readonly>
+            </div>
+            <div id="date-list" class="date-list">
+
+            </div>
+            <p class="takeOffBtn" id="in" onclick="send()">查询</p>
+        </div>
+    </div>
+    <div class="departureListWindow">
+        <div class="departure-list" id="departure-list">
+
+        </div>
+    </div>
+    <div class="arriveListWindow">
+        <div class="arrive-list" id="arrive-list">
+
+        </div>
+    </div>
+    <div class="flightListWindow">
+        <div class="flight-list" id="flight-list">
+
+        </div>
+    </div>
+    <div id="hintWindow">
+
     </div>
 </div>
-</body>
+<!-- scripts -->
+<script src="js/particles.min.js"></script>
+<script src="js/app.js"></script>
 <script>
+    var click1= 0;
+    var focusOnWindow = 0;
     window.onload = function(){
+        if(document.getElementById("date").value == ""){
+            document.getElementById("date").value = todayDate;
+        }
         if(get_cookie("islogin") == 0){
             var str = '<li class="login">\n' +
                 '                <a href="login.html" class="logbtn">登录/注册</a>\n' +
                 '            </li>';
             document.getElementById("login").innerHTML = str;
         }
+        document.getElementById("departure").oninput = function () {
+            var listnum = 0;
+            var str = '';
+            var cityName = document.getElementById("departure").value;
+            var jslength=0;
+            var jsonCity = JSON.parse(CityList);
+            if(cityName != ""){
+                str+='<table class="departure-table">\n';
+                for(var i in jsonCity){
+                    var index = jsonCity[i] + "(" + i + ")";
+                    if(index.indexOf(cityName) == 0){
+                        str+=
+                            '            <tr><td class="departure-city" onmousemove="getCityName1(\''+jsonCity[i]+'('+i+')'+'\')">'+jsonCity[i]+'('+i+')'+'</td></tr>\n' ;
+                        listnum++;
+                    }
+                    if(listnum >= 12){
+                        break;
+                    }
+                }
+                for(var i in jsonCity){
+                    var index = jsonCity[i] + "(" + i + ")";
+                    if(listnum >= 12){
+                        break;
+                    }
+                    if(index.indexOf(cityName) > 0){
+                        str+=
+                            '            <tr><td class="departure-city" onmousemove="getCityName1(\''+jsonCity[i]+'('+i+')'+'\')">'+jsonCity[i]+'('+i+')'+'</td></tr>\n' ;
+                        listnum++;
+                    }
+                }
+                str+='        </table>';
+                document.getElementById("departure-list").innerHTML=str;
+            }
+            else{
+                document.getElementById("departure-list").innerHTML="";
+            }
+        }
+        document.getElementById("arrive").oninput = function () {
+            var listnum = 0;
+            var str = '';
+            var cityName = document.getElementById("arrive").value;
+            var jslength=0;
+            var jsonCity = JSON.parse(CityList);
+            if(cityName != ""){
+                str+='<table class="arrive-table">\n';
+                for(var i in jsonCity){
+                    var index = jsonCity[i] + "(" + i + ")";
+                    if(index.indexOf(cityName) == 0){
+                        str+=
+                            '            <tr><td class="arrive-city" onmousemove="getCityName2(\''+jsonCity[i]+'('+i+')'+'\')">'+jsonCity[i]+'('+i+')'+'</td></tr>\n' ;
+                        listnum++;
+                    }
+                    if(listnum >= 12){
+                        break;
+                    }
+                }
+                for(var i in jsonCity){
+                    var index = jsonCity[i] + "(" + i + ")";
+                    if(listnum >= 12){
+                        break;
+                    }
+                    if(index.indexOf(cityName) > 0){
+                        str+=
+                            '            <tr><td class="arrive-city" onmousemove="getCityName2(\''+jsonCity[i]+'('+i+')'+'\')">'+jsonCity[i]+'('+i+')'+'</td></tr>\n' ;
+                        listnum++;
+                    }
+                }
+                str+='        </table>';
+                document.getElementById("arrive-list").innerHTML=str;
+            }
+            else{
+                document.getElementById("arrive-list").innerHTML="";
+            }
+        }
+        document.getElementById("departure").onclick = function(){
+            click1 = 1;
+            hot();
+        }
+        document.getElementById("arrive").onclick = function(){
+            hot();
+            click1 = 1;
+        }
+        document.getElementById("flight-list").onclick = function(){
+            click1 = 1;
+        }
+        document.getElementById("date").onclick = function () {
+            document.getElementById("flight-list").innerHTML = "";
+            MyDatePick();
+        }
+        document.onclick = function () {
+            MyDatePick.close();
+            if(click1 == 1){
+                click1 = 0;
+                MyDatePick.close();
+            }
+            else{
+                document.getElementById("flight-list").innerHTML = "";
+            }
+        }
+        document.getElementById("departure").onfocus = function () {
+            focusOnWindow = 1;
+        }
+        document.getElementById("arrive").onfocus = function () {
+            focusOnWindow = 2;
+        }
     }
 </script>
+<script>
+    var departure = "";
+    var arrive = "";
+    function getCityName(cityName) {
+        var city = cityName.innerHTML;
+        var city1 = city.split(";")[1];
+        var city2 = city1.split("&")[0];
+        var jsonCity = JSON.parse(CityList);
+        for(var i in jsonCity){
+            var index = jsonCity[i] + "(" + i + ")";
+            if(index.indexOf(city2) >= 0){
+                if(focusOnWindow == 1){
+                    document.getElementById("departure").value = jsonCity[i] + '('+i+')';
+                    document.getElementById("flight-list").innerHTML="";
+                }
+                if(focusOnWindow == 2)
+                    document.getElementById("arrive").value = jsonCity[i] + '('+i+')';
+                document.getElementById("flight-list").innerHTML="";
+            }
+        }
+    }
+    function getCityName1(cityName) {
+        departure = cityName;
+        // document.getElementById("departure").value = cityName;
+    }
+    function getCityName2(cityName) {
+        arrive = cityName;
+        // document.getElementById("arrive").value = cityName;
+    }
+    function swap() {
+        var departure = document.getElementById("departure").value;
+        var arrive = document.getElementById("arrive").value;
+        document.getElementById("departure").value = arrive;
+        document.getElementById("arrive").value = departure;
+    }
+    function Blur1(){
+        var str = "";
+        if(departure != ""){
+            document.getElementById("departure").value = departure;
+        }
+        departure = "";
+        var cityName = document.getElementById("departure").value;
+        var jsonCity = JSON.parse(CityList);
+        if(cityName != ""){
+            for(var i in jsonCity){
+                var index = jsonCity[i] + "(" + i + ")";
+                if(index.indexOf(cityName) >= 0){
+                    document.getElementById("departure").value = jsonCity[i] + "(" + i + ")";
+                    break;
+                }
+            }
+        }
+        document.getElementById("departure-list").innerHTML=str;
+    }
+    function Blur2(){
+        var str = "";
+        if(arrive != ""){
+            document.getElementById("arrive").value = arrive;
+        }
+        arrive = "";
+        var cityName = document.getElementById("arrive").value;
+        var jsonCity = JSON.parse(CityList);
+        if(cityName != ""){
+            for(var i in jsonCity){
+                var index = jsonCity[i] + "(" + i + ")";
+                if(index.indexOf(cityName) >= 0){
+                    document.getElementById("arrive").value = jsonCity[i] + "(" + i + ")";
+                    break;
+                }
+            }
+        }
+        document.getElementById("arrive-list").innerHTML=str;
+    }
+    function hot(){
+        var str ='<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p class="cur" onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>'+
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北京首都&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp广州白云&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp上海浦东&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp上海虹桥&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp成都双流&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp深圳宝安&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp昆明长水&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西安咸阳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp重庆江北&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp杭州萧山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp厦门高崎&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南京禄口&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp武汉天河&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp沈阳桃仙&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp青岛流亭&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp福州长乐&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp三亚凤凰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp天津滨海&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function abcd() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>'+
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspA&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿坝红原&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿尔山伊尔施&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿克苏温宿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿勒泰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿里昆莎&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp安康&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp安庆天柱山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp鞍山腾鳌&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp安顺黄果树&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp安阳北郊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp澳门&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspB&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp百色田阳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp保山云瑞&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp包头二里半&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴彦淖尔天吉泰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北竿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北海福成&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北京南苑&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp北京首都&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp毕节飞雄&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp博乐阿拉山口&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspC&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp长春龙嘉&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp常德桃花源&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp昌都邦达&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp长沙黄花&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp长治王村&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp常州奔牛&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp朝阳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp成都双流&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp赤峰玉龙&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp池州九华山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp重庆江北&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspD&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大理荒草坝&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp丹东浪头&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp稻城亚丁&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大庆萨尔图&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大同云冈&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp达州河市&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp德令哈&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp迪庆香格里拉&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp东营胜利&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp敦煌&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大连周水子&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function efgh() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspE&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp额济纳旗桃来&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp恩施许家坪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp二连浩特赛乌素&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspF&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp福建龙岩冠豸山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阜阳西关&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp抚远东极&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp富蕴&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp福州长乐&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspG&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp赣州黄金&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp高雄&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp格尔木&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp广元盘龙&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp广州白云&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp桂林两江&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp贵阳龙洞堡&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp固原六盘山&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspH&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp哈尔滨太平&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp海口美兰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp海拉尔东山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp哈密&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp邯郸&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp杭州萧山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp汉中城固&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp河池金城江&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp合肥新桥&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp黑河&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp恒春五里亭&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp衡阳南岳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp和田&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp淮安涟水&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp怀化芷江&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp花莲&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp黄山屯溪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp花土沟&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp呼和浩特白塔&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp惠州平潭&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function jklm() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspJ&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp佳木斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp嘉义&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp嘉峪关&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp揭阳潮汕&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp吉林二台子&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp济南遥墙&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp金昌金川&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp景德镇罗家&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp井冈山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp济宁曲阜&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp锦州湾&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp九江庐山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp九寨沟黄龙&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp鸡西兴凯湖&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspK&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp喀纳斯布尔津&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp康定&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp喀什&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp克拉玛依&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp库车龟兹&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp库尔勒&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp昆明长水&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspL&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp拉萨贡嘎&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp连云港白塔埠&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp荔波&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp丽江三义&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp临沧博尚&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp临汾乔李&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp林西&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp临沂沭埠岭&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp林芝米林&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp黎平&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp六盘水月照&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp柳州白莲&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp洛阳北郊&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp泸州蓝田&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp吕梁大武&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspM&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp芒市&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp满洲里西郊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp梅县长岗岌&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp绵阳南郊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp漠河古莲&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp牡丹江海浪&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function nopqrs() {
+        var str = ' <div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspN&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南昌昌北&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南充高坪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南竿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南京禄口&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南宁吴圩&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南沙永暑礁&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南通兴东&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp南阳姜营&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp宁波栎社&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp宁蒗泸沽湖&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspP&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp屏东&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp普洱思茅&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspQ&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp且末&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp七美&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp青岛流亭&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp庆阳西峰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp秦皇岛山海关&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp齐齐哈尔三家子&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp泉州晋江&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp衢州&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspR&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp日照山字河&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspS&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp三亚凤凰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp上海虹桥&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp上海浦东&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp上饶三清山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp尚义&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp韶关&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp神农架红坪&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp神农架红坪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp深圳宝安&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp石河子花园&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp石家庄正定&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp十堰武当山&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function twx() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspT&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北松山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北桃园&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台东丰年&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台南&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp太原武宿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台中&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台中清泉岗&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台州路桥&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp唐山三女河&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp腾冲驼峰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp天津滨海&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp天水麦积山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp通化&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp通辽&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp铜仁凤凰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp吐鲁番交河&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspW&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp潍坊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp威海大水泊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp文山普者黑&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp温州龙湾&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp乌海&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp武汉天河&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp乌兰察布集宁&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp乌兰浩特依勒力特&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp乌鲁木齐地窝堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp无锡硕放&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp武夷山&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp梧州长洲岛&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspX&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp厦门高崎&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp香港赤鱲角&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp襄阳刘集&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西安咸阳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西昌青山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp锡林浩特&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp邢台褡裢&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp兴义万峰林&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西宁曹家堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp忻州五台山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西双版纳嘎洒&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp徐州观音&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function yz() {
+        var str = ' <div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="hot()">热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="abcd()">ABCD&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="efgh()">EFGH&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="jklm()">JKLM&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="nopqrs()">NOPQRS&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="twx()">TWX&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="yz()">YZ&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspY&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp盐城南洋&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp扬州泰州&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp延吉朝阳川&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp烟台蓬莱&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp宜宾菜坝&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp宜昌三峡&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伊春林都&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp宜春明月山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp银川河东&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp营口兰旗&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伊宁&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp义乌&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp永州零陵&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp右旗巴丹吉林&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp榆林榆阳&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp运城关公&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp玉树巴塘&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbspZ&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp张家口宁远&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp张掖甘州&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp湛江&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp昭通&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp郑州新郑&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp中卫沙坡头&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p>&nbsp&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp舟山普陀山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp珠海金湾&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp遵义新舟&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp左旗巴彦浩特&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function interHot() {
+        var str = ' <div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p class="cur" onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp香港赤鱲角&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp首尔金浦&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp首尔仁川&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北松山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北桃园&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp东京成田&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp东京羽田&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp新加坡樟宜&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp澳门&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp曼谷(素万那普)&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大阪关西&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大阪伊丹&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp胡志明市新山一&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp马尼拉&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp名古屋中部/新特丽亚&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伦敦盖特威克&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伦敦希思罗&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp吉隆坡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp釜山金海&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp悉尼金斯福德·史密斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp法兰克福&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp温哥华&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴黎－奥利&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴黎戴高乐&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp纽约肯尼迪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp纽约拉瓜迪亚&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp洛杉矶&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科伏努科沃&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科谢诺梅杰沃&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科多莫杰多沃&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Asia() {
+        var str = ' <div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp香港赤鱲角&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp东京成田&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp东京羽田&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北松山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp台北桃园&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp首尔金浦&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp首尔仁川&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp新加坡樟宜&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp曼谷(素万那普)&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp吉隆坡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大阪关西&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp大阪伊丹&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp澳门&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp雅加达苏加诺-哈达&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp胡志明市新山一&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp马尼拉&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp登巴萨巴厘岛&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp名古屋中部/新特丽亚&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp普吉岛普吉&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp河内内拜&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp马累&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp迪拜&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp釜山金海&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp加德满都&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp高雄&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp福冈&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp金边&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp新德里德里&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp济州岛济州&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp乌兰巴托&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp孟买&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伊斯坦布尔阿塔图尔克&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Europe() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伦敦盖特威克&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伦敦希思罗&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴黎－奥利&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴黎戴高乐&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp法兰克福&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科伏努科沃&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科谢诺梅杰沃&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp莫斯科多莫杰多沃&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp罗马菲乌米奇诺&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp荷兰阿姆斯特丹斯史基浦(西霍普)&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp米兰利纳特&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp米兰马尔本萨&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp慕尼黑&nbsp</p></td>\n' +
+
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp斯德哥尔摩&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp柏林舍讷费尔德&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp柏林泰格尔&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp曼彻斯特&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp马德里&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp苏黎世&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp布鲁塞尔&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp哥本哈根&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp赫尔辛基&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp巴塞罗那&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp雅典&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp爱丁堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp伯明翰&nbsp</p></td>\n' +
+
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp纽卡斯尔威廉斯敦&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp日内瓦&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp圣彼得堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp基辅&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp布达佩斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp汉堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp布拉格&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function America() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp纽约肯尼迪&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp纽约拉瓜迪亚&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp洛杉矶&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp旧金山&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp温哥华&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp芝加哥奥黑尔&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp多伦多皮尔逊&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp西雅图塔科马&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp华盛顿杜勒斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp波士顿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp底特律大都会&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp休斯敦&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp蒙特利尔特鲁多&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp夏威夷&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp塞班&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp圣保罗&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp渥太华&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp墨西哥城&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp卡尔加里CALGARY&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp布宜诺斯艾利斯埃塞萨皮斯塔里尼部长&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp拉斯维加斯麦卡伦&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Africa() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp开罗&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp约翰内斯堡&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp开普敦开普顿&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp内罗毕乔莫·肯雅塔&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp罗安达二月四日&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp毛里求斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp达累斯萨拉姆尼雷尔&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp亚的斯亚贝巴博乐&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp德班&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp哈拉雷&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿克拉科托卡&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+    function Oceania() {
+        var str = '<div class="city-head">\n' +
+            '        <table>\n' +
+            '            <tr class="clearfix">\n' +
+            '                <td><p onclick="interHot()">国际热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Asia()">亚洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Europe()">欧洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="America()">美洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="Africa()">非洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p class="cur" onclick="Oceania()">大洋洲&nbsp&nbsp&nbsp</p></td>\n' +
+            '                <td><p onclick="hot()">国内热门&nbsp&nbsp&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>\n' +
+            '    <div id="city-list" class="city-list">\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp悉尼金斯福德·史密斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp墨尔本&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp奥克兰&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp布里斯班&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp阿德莱德&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp珀斯&nbsp</p></td>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp惠灵顿&nbsp</p></td>\n' +
+            '        </table>\n' +
+            '        <table class="city-Table">\n' +
+            '            <tr>\n' +
+            '                <td><p class="city-name" onclick="getCityName(this.valueOf())">&nbsp堪培拉&nbsp</p></td>\n' +
+            '            </tr>\n' +
+            '        </table>\n' +
+            '    </div>';
+        document.getElementById("flight-list").innerHTML = str;
+    }
+</script>
+</body>
 </html>

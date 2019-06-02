@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>用户管理网站</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="cssAdm/style.css">
+    <link rel="stylesheet" type="text/css" href="cssAdm/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="cssAdm/flightlist.css"/>
+    <script src="jsAdm/userInfo.js"></script>
+</head>
+<body>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="AdmHomePage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="AdmHomePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>用户管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toUserLogOff()">注销用户</a></p>
+                            <p><a class="clickBtn" onclick="toUserPushMes()">消息推送</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>航班管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toFlightPush()">消息推送</a></p>
+                            <p><a class="clickBtn" onclick="toAddFlight()">新增航班</a></p>
+                            <p><a class="clickBtn" onclick="toDeleteFlight()">删除航班</a></p>
+                            <p><a class="clickBtn" onclick="toModifyFlight()">修改航班</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul id="login">
+
+            </ul>
+        </div>
+    </div>
+    <div class="mainimage">
+        <div id="welcome" class="welcome">
+
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
+</div>
+<!-- scripts -->
+<script src="jsAdm/particles.min.js"></script>
+<script src="jsAdm/app.js"></script>
+<script>
+    document.cookie="Admnotlogin=true";
+    document.cookie="Admlogout=true";
+    window.onload = function(){
+        if(get_cookie("Admislogin") == 0){
+            var str = '<li class="login">\n' +
+                '                <a href="AdmLogin.html" class="logbtn">登录</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str;
+            document.getElementById("welcome").innerHTML='<a href="AdmLogin.html"><p id="welcomeTo" class="please">请您尽快登录以享受更多服务</p></a>';
+        }
+        if(get_cookie("Admislogin") == 1){
+            var str = '<li class="login">\n' +
+                '                    <a class="logOffBtn" onclick="toAdmLogOff()">&nbsp&nbsp登出&nbsp&nbsp</a>\n' +
+                '                </li>';
+            document.getElementById("login").innerHTML = str;
+            document.getElementById("welcome").innerHTML='<span id="welcomeTo" class="welcomeTo">欢迎使用用户管理网站</span>';
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>航班管理/删除航班</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="cssAdm/style.css">
+    <link rel="stylesheet" type="text/css" href="cssAdm/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="cssAdm/flightlist.css"/>
+    <link rel="stylesheet" href="cssAdm/mydate.css">
+    <script src="jsAdm/userInfo.js"></script>
+    <script src="jsAdm/mydate.js"></script>
+</head>
+<body>
+<script>
+    var today = new Date();
+    var dateStr = today.getDate();
+    var monthStr = today.getMonth() + 1;
+    var yearStr = today.getFullYear();
+    if(monthStr < 10){
+        monthStr = "0" + monthStr;
+    }
+    if(dateStr < 10){
+        dateStr  = "0" + dateStr;
+    }
+    var todayDate = yearStr + "/" + monthStr + "/" + dateStr;
+</script>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="AdmHomePage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="AdmHomePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>用户管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toUserLogOff()">注销用户</a></p>
+                            <p><a class="clickBtn" onclick="toUserPushMes()">消息推送</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>航班管理</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toFlightPush()">消息推送</a></p>
+                            <p><a class="clickBtn" onclick="toAddFlight()">新增航班</a></p>
+                            <p><a class="clickBtn" onclick="toDeleteFlight()">删除航班</a></p>
+                            <p><a class="clickBtn" onclick="toModifyFlight()">修改航班</a></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul>
+                <li id="login">
+
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="mainimage">
+        <div class="deleteFlightWindow">
+            <p><input id="flightnum" class="flightNumInput" type="text" placeholder="请输入航班号" maxlength="10" size="12" autofocus></p>
+            <div class="date-window" id="date-window">
+                <p class="departureDate" id="departureDate">出发时间</p>
+                <div class="vertical"></div>
+                <input id="date" type="text" class="date" value="" readonly>
+            </div>
+            <div id="date-list" class="date-list">
+
+            </div>
+            <p><input id="depCode" class="depCodeInput" type="text" placeholder="出发机场代码" maxlength="10" size="12"></p>
+            <p><input id="arriveCode" class="arriveCodeInput" type="text" placeholder="目的机场代码" maxlength="10" size="12"></p>
+            <p class="flightNumBtn" id="in" onclick="send()">确认删除</p>
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
+</div>
+<!-- scripts -->
+<script src="jsAdm/particles.min.js"></script>
+<script src="jsAdm/app.js"></script>
+<script>
+    document.cookie="Admnotlogin=true";
+    document.cookie="Admlogout=true";
+    document.cookie="Admdelete=true";
+    window.onload = function(){
+        if(get_cookie("Admislogin") == 0){
+            var str = '<li class="login">\n' +
+                '                <a href="AdmLogin.html" class="logbtn">登录</a>\n' +
+                '            </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+        if(get_cookie("Admislogin") == 1){
+            var str = '<li class="login">\n' +
+                '                    <a class="logOffBtn" onclick="toAdmLogOff()">&nbsp&nbsp登出&nbsp&nbsp</a>\n' +
+                '                </li>';
+            document.getElementById("login").innerHTML = str;
+        }
+        if(document.getElementById("date").value == ""){
+            document.getElementById("date").value = todayDate;
+        }
+        document.getElementById("date").onclick = function () {
+            MyDatePick();
+        }
+        document.onclick = function (){
+            MyDatePick.close();
+        }
+    }
+    function send() {
+        if(get_cookie("Admislogin") == 1){
+            var flightCode = document.getElementById("flightnum").value;
+            var date = document.getElementById("date").value;
+            var dateString =date.toString();
+            dateString = dateString.replace(/\//g,'',);
+            var depCode = document.getElementById("depCode").value;
+            var arriveCode = document.getElementById("arriveCode").value;
+            if(flightCode == ""||depCode == ""||arriveCode == ""){
+                if(get_cookie("Admdelete") == "true"){
+                    document.cookie="Admdelete=false";
+                    var str = '<div class="hint" id="hint">\n' +
+                        '            <p>请将信息填写完整</p>\n' +
+                        '        </div>';
+                    document.getElementById("hintWindow").innerHTML=str;
+                    hintStyle();
+                    setTimeout("empty()",1200);
+                    setTimeout("takeTrue('Admdelete')",1200);
+                }
+            }
+            else{
+                var xhr = AjaxFunction();
+                var jsonData = JSON.stringify({
+                    adminname:get_cookie("Admuser"),
+                    token:DeleteMark(get_cookie("Admtoken")),
+                    flight_code:flightCode,
+                    flight_date:dateString,
+                    dep_airp_code:depCode,
+                    arri_airp_code:arriveCode,
+                })
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState==4){
+                        var responseData = JSON.parse(xhr.responseText);
+                        if(responseData.status == "success!"){
+                            if(get_cookie("Admdelete") == "true"){
+                                document.cookie="Admdelete=false";
+                                var str = '<div class="hint" id="hint">\n' +
+                                    '            <p>删除成功</p>\n' +
+                                    '        </div>';
+                                document.getElementById("hintWindow").innerHTML=str;
+                                hintStyle();
+                                setTimeout("empty()",1200);
+                                setTimeout("takeTrue('Admdelete')",1200);
+                            }
+                        }
+                        else{
+                            if(get_cookie("Admdelete") == "true"){
+                                document.cookie="Admdelete=false";
+                                var str = '<div class="hint" id="hint">\n' +
+                                    '            <p>删除失败</p>\n' +
+                                    '        </div>';
+                                document.getElementById("hintWindow").innerHTML=str;
+                                hintStyle();
+                                setTimeout("empty()",1200);
+                                setTimeout("takeTrue('Admdelete')",1200);
+                            }
+                        }
+                    }
+                }
+                xhr.open("POST","http://114.115.134.119:5000/beta/deleteFlight",true);
+                xhr.setRequestHeader("Content-type","application/json");
+                xhr.send(jsonData);
+            }
+        }
+        else{
+            if(get_cookie("Admnotlogin") == "true"){
+                notLogin();
+                setTimeout("empty()",1200);
+            }
+        }
+    }
+</script>
+</body>
+</html>

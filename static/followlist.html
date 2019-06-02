@@ -1,59 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>航班助手</title>
-    <script src="userInfo.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <title>关注列表</title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="css/flightlist.css"/>
+    <script src="js/userInfo.js"></script>
 </head>
 <body>
-<div class="header">
-    <div class="logo">
-        <a href="homepage.html">
-            <img src="image/logo.jpg" width="200px" alt="logo">
-        </a>
-    </div>
-    <ul class="menu">
-        <li class="top-menu-item top-menu-noclick" id="HOME">
-            <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd" ><span>航班查询</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
-                    <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
-                </div>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="homepage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
             </div>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd"><span>个人中心</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
-                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
-                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
-                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>航班查询</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                            <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>个人中心</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                            <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                            <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                            <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
 
-                </div>
-            </div>
-        </li>
-    </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul id="login">
+
+            </ul>
+        </div>
+    </div>
+    <div class="mainimage">
+        <div id="follow-num" class="follow-num">
+
+        </div>
+        <div id="followlist" class="followlist">
+
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
 </div>
-<div class="mainimage">
-    <div class="image">
-        <img src="image/page1.jpg" width="100%">
-    </div>
-    <div id="follow-num" class="follow-num">
-
-    </div>
-    <div id="followlist" class="followlist">
-
-    </div>
-</div>
-</body>
+<!-- scripts -->
+<script src="js/particles.min.js"></script>
+<script src="js/app.js"></script>
 <script>
+    document.cookie="notlogin=true";
     var localPage = "followlist.html";
+    document.cookie="followlist=true";
     var responseData;
     function ajaxFunction(){
         var xmlHttp;
@@ -86,20 +102,20 @@
                 responseData = JSON.parse(xhr.responseText);
                 var length = responseData.length;
                 if(length != 0){
-                    str='<table class="follow-table">'+'<tr class="follow-list-hd"><th>关注航班号</th><th>关注时间</th></tr>';
+                    str='<table class="follow-table">'+'<tr><th class="follow-list-hd">关注航班号</th><th class="follow-list-hd">关注时间</th></tr>';
                 }
-                if(length != 0){
-                    document.getElementById("follow-num").innerHTML="<p>您共关注了"+length+"趟航班</p>";
+                if(length > 0){
+                    document.getElementById("follow-num").innerHTML="<span>您共关注了"+length+"趟航班</span>";
                 }
                 else{
-                    document.getElementById("follow-num").innerHTML="<p class='not'>您尚未关注任何航班！</p>";
+                    document.getElementById("follow-num").innerHTML="<span class='not'>您尚未关注任何航班！</span>";
                 }
                 for(var i = 0;i < length;i++){
                     str = str+'<tr class="followListTab">'+
-                            '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].flightCode))+'</td>'+
-                            '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].date))+'</td>'+
-                            '<td><input type="button" class="btn" value="取消关注" onclick="cancel(JSON.stringify(responseData['+i+'].flightCode),JSON.stringify(responseData['+i+'].date))"></td>'
-                            '</tr>';
+                        '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].flightCode))+'</td>'+
+                        '<td class="follow">'+deleteMark1(JSON.stringify(responseData[i].date))+'</td>'+
+                        '<td><input type="button" class="btn" value="取消关注" onclick="cancel(JSON.stringify(responseData['+i+'].flightCode),JSON.stringify(responseData['+i+'].date))"></td>'+
+                    '</tr>';
                 }
                 str+='</table>'
                 document.getElementById("followlist").innerHTML=str;
@@ -135,7 +151,16 @@
                     window.location.href = "followlist.html";
                 }
                 else{
-                    alert("取消关注失败！");
+                    if(get_cookie("followlist") == "true"){
+                        var str = '<div class="hint" id="hint">\n' +
+                            '            <p>取消关注失败</p>\n' +
+                            '        </div>';
+                        document.getElementById("hintWindow").innerHTML=str;
+                        hintStyle();
+                        setTimeout("empty()",1200);
+                        document.cookie = "followlist=false";
+                        setTimeout("takeTrue('followlist')",1200);
+                    }
                 }
             }
         }
@@ -143,5 +168,9 @@
         xhr1.setRequestHeader("Content-type","application/json");
         xhr1.send(jsonData1);
     }
+    // window.onclose = function () {
+    //     logout();
+    // }
 </script>
+</body>
 </html>

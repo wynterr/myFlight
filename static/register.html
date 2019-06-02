@@ -1,64 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>注册</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="userInfo.js"></script>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="css/flightlist.css"/>
+    <script src="js/userInfo.js"></script>
 </head>
 <body>
-<div class="header">
-    <div class="logo">
-        <a href="homepage.html">
-            <img src="image/logo.jpg" width="200px" alt="logo">
-        </a>
+<div id="particles-js">
+    <div class="main">
+        <div class="header">
+            <div class="logo">
+                <a href="homepage.html">
+                    <img src="img/logo.jpg" width="200px" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="top-menu-item top-menu-noclick" id="HOME">
+                    <a href="homepage.html" class="menu-hd cur_pointer"><span>首页</span></a>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd" ><span>航班查询</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" href="flight_num.html">按航班号</a></p>
+                            <p><a class="clickBtn" href="takeoff_land.html">按起降地</a></p>
+                        </div>
+                    </div>
+                </li>
+                <li class="top-menu-item top-menu-noclick">
+                    <a class="menu-hd"><span>个人中心</span></a>
+                    <div class="menu-dropdown">
+                        <div class="menu-dropdown-inner">
+                            <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
+                            <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
+                            <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
+                            <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul id="login">
+
+            </ul>
+        </div>
     </div>
-    <ul class="menu">
-        <li class="top-menu-item top-menu-noclick">
-            <a href="homePage.html" class="menu-hd cur_pointer"><span>首页</span></a>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd" ><span>航班查询</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a href="flight_num.html">按航班号</a></p>
-                    <p><a href="takeoff_land.html">按起降地</a></p>
+    <div class="mainimage">
+        <div class="register">
+            <div class="login-top">
+                注册
+            </div>
+            <div class="haveAccount">
+                已有账号
+            </div>
+            <div>
+                <a class="quickLogin" href="login.html">快速登录</a>
+            </div>
+            <div class="login-center clearfix">
+                <div class="login-center-img"><img src="img/name.png"/></div>
+                <div class="login-center-input">
+                    <input type="text" value=""  id="username" placeholder="请输入6-13位字母或数字" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的用户名'"/>
+                    <div class="login-center-input-text">用户名</div>
                 </div>
             </div>
-        </li>
-        <li class="top-menu-item top-menu-noclick">
-            <a class="menu-hd"><span>个人中心</span></a>
-            <div class="menu-dropdown">
-                <div class="menu-dropdown-inner">
-                    <p><a class="clickBtn" onclick="toChangePwd(localPage)">修改密码</a></p>
-                    <p><a class="clickBtn" onclick="toMyInfo(localPage)">我的信息</a></p>
-                    <p><a class="clickBtn" onclick="toLogOff(localPage)">注销</a></p>
-                    <p><a class="clickBtn" onclick="toFollowList(localPage)">关注列表</a></p>
+            <div class="login-center clearfix">
+                <div class="login-center-img"><img src="img/password.png"/></div>
+                <div class="login-center-input">
+                    <input type="password" value="" id="pwd" placeholder="请输入6-13位字母或数字" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
+                    <div class="login-center-input-text">密码</div>
                 </div>
             </div>
-        </li>
-    </ul>
+            <div class="login-center clearfix">
+                <div class="login-center-img"><img src="img/password.png"/></div>
+                <div class="login-center-input">
+                    <input type="password" value="" id="pwdAgain" placeholder="请再次输入密码" onfocus="this.placeholder=''" onblur="this.placeholder='请再次输入密码'"/>
+                    <div class="login-center-input-text">确认密码</div>
+                </div>
+            </div>
+            <div class="login-center clearfix">
+                <div class="login-center-img"><img src="img/email.png"/></div>
+                <div class="login-center-input">
+                    <input type="email" value="" id="email" placeholder="请输入您的邮箱" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的邮箱'"/>
+                    <div class="login-center-input-text">邮箱</div>
+                </div>
+            </div>
+            <div class="login-button">
+                <p onclick="register()">注册</p>
+            </div>
+        </div>
+    </div>
+    <div id="hintWindow">
+
+    </div>
 </div>
-<div class="mainimage">
-    <div class="image">
-        <img src="image/page1.jpg" width="100%">
-    </div>
-    <div>
-        <p class="title">注册</p>
-    </div>
-    <div class="login-window">
-        <p class="usename">用户名</p>
-        <p><input type="text" id="username" class="input-window" placeholder="6-13位数字或字母" maxlength="13" size="60" autofocus></p>
-        <p class="pwd">密码</p>
-        <p><input type="password" id="pwd" class="input-window" placeholder="6-13位数字或字母" maxlength="13" size="60" autofocus></p>
-        <p class="pwdAgain">再次输入密码</p>
-        <p><input type="password" id="pwdAgain" class="input-window" placeholder="6-13位数字或字母" maxlength="13" size="60" autofocus></p>
-        <p class="email">绑定邮箱</p>
-        <p><input type="text" id="email" class="input-window" placeholder="请输入您的邮箱" maxlength="25" size="60" autofocus></p>
-        <p><input class="login-btn" type="button" onclick="register()" value="注册"></p>
-    </div>
-</div>
+<!-- scripts -->
+<script src="js/particles.min.js"></script>
+<script src="js/app.js"></script>
 <script>
+    document.cookie="notlogin=true";
+    document.cookie="register=true";
+    document.cookie="samepwd=true";
     var localPage = "register.html";
     function register(){
         var op = 2;
@@ -67,10 +114,20 @@
         var pwdAgain = document.getElementById("pwdAgain").value;
         var email = document.getElementById("email").value;
         if(pwd == pwdAgain){
-            window.location.href = "checkInfoStyle.html?op:" + op + "&user:" + username + "&pwd:" + pwd+ "&email:" + email;
+            var str = "op:" + op + "&user:" + username + "&pwd:" + pwd+ "&email:" + email;
+            checkInfoStyle(str);
         }
-       else{
-           alert("两次密码不一致！");
+        else{
+            if(get_cookie("samepwd") == "true"){
+                var str = '<div class="hint" id="hint">\n' +
+                    '            <p>两次密码不一致</p>\n' +
+                    '        </div>';
+                document.getElementById("hintWindow").innerHTML=str;
+                hintStyle();
+                setTimeout("empty()",1500);
+                document.cookie = "samepwd=false";
+                setTimeout("takeTrue('samepwd')",1500);
+            }
         }
     }
 </script>
