@@ -1,4 +1,5 @@
 var CityList=JSON.stringify({
+    BJS:"北京",
     AHJ:"阿坝红原",
     YIE:"阿尔山伊尔施",
     AKU:"阿克苏温宿",
@@ -5353,7 +5354,7 @@ var CityList=JSON.stringify({
     SZZ:"什切青格勒尼欧",
     SHM:"Shirahama白滨",
     WSH:"Shirley, New YorkShirley",
-    SHH:"Shishmaref, Alaska希什马廖夫",
+    SHH:"上海",
     SBW:"诗巫",
     FLZ:"实武牙",
     SSE:"SholapurSolapur",

@@ -65,7 +65,7 @@ class DataBase:
             print("用户名已存在")
             return 0
         else:  # 添加信息至数据库，并发送激活邮件
-            urlHead = 'http://114.115.134.119:5000/beta/active/'  # username/token
+            urlHead = 'http://39.107.74.159:5000/beta/active/'  # username/token
             Code = ''.join(random.sample(self.codeSource, 10))
             activateCode = urlHead + userID + '/' + Code   # 生成激活链接
 
@@ -262,7 +262,7 @@ class DataBase:
     def email_for_pwd(self,userID):
         sql = 'select email from userMessage where userID = %s'
         sql2 = 'update userMessage set modifyCode = %s where userID = %s'
-        urlHead = 'http://114.115.134.119:5000/beta/modifyPassword'  # username/token
+        urlHead = 'http://39.107.74.159:5000/beta/modifyPassword'  # username/token
         Code = ''.join(random.sample(self.codeSource, 10))
         changeUrl = urlHead + '/' + userID + '/' + Code  # 生成修改密码链接
 

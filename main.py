@@ -85,8 +85,8 @@ def searchByFlightNumber():
         flightData = []
         for i in range(len(allData)):
             thisRecord = allData[i]
-            if ('%' not in thisRecord['ontime_rate']):
-                continue;
+            if (data['op'] == 1 and '%' not in thisRecord['ontime_rate']):
+                continue
             flightData.append({
                     'corp_name':thisRecord['corp_name'],
                     'flight_code':thisRecord['flight_code'],

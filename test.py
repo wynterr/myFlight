@@ -36,9 +36,9 @@ def testSBFN():    #search by flight number
 def testSBC():  #search by city
     body = {
         'op':2,
-        'cityFrom':'PEK',
-        'cityTo':'SHA',
-        'date':'20190420'
+        'cityFrom':'BJS',
+        'cityTo':'SHH',
+        'date':'20190602'
     }
     headers = {'content-type': "application/json"}
     res = requests.post(url = SBFNUrl,headers = headers,data = json.dumps(body));
@@ -281,7 +281,7 @@ def testGetUserInfo():
 if (__name__ == '__main__'):
    #testLog();
    #testSBFN();
-   #testSBC()
+   testSBC()
    #testDI();
    #testCI();
    #testDIBU();
@@ -300,4 +300,4 @@ if (__name__ == '__main__'):
     #testSearchFlight()
     #testGetFocus()
     #testSendByFlight()
-    testGetUserInfo()
+    #testGetUserInfo()

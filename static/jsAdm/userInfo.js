@@ -67,7 +67,7 @@ function toAdmLogOff(){
                 }
             }
         }
-        xhr.open("POST","http://114.115.134.119:5000/beta/manaLogout",true);
+        xhr.open("POST","http://39.107.74.159:5000/beta/manaLogout",true);
         xhr.setRequestHeader("Content-type","application/json");
         xhr.send(jsonData);
     }

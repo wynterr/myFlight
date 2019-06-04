@@ -91,7 +91,7 @@ function toLogOff(url){
                 setTimeout("skip('homepage.html')",800);
             }
         }
-        xhr.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+        xhr.open("POST","http://39.107.74.159:5000/beta/getFocusedFlights",true);
         xhr.setRequestHeader("Content-type","application/json");
         xhr.send(jsonData);
     }
@@ -383,7 +383,7 @@ function checkInfoStyle(a){
                     }
                 }
             }
-            xhr.open("POST","http://114.115.134.119:5000/beta/login",true);
+            xhr.open("POST","http://39.107.74.159:5000/beta/login",true);
             xhr.setRequestHeader("Content-type","application/json");
             xhr.send(jsonData1);
         }
@@ -414,7 +414,7 @@ function checkInfoStyle(a){
                     }
                 }
             }
-            xhr.open("POST","http://114.115.134.119:5000/beta/register",true);
+            xhr.open("POST","http://39.107.74.159:5000/beta/register",true);
             xhr.setRequestHeader("Content-type","application/json");
             xhr.send(jsonData2);
         }
