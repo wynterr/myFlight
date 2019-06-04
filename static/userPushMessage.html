@@ -160,13 +160,13 @@
                                 document.getElementById("followlist").innerHTML=str;
                             }
                         }
-                        xhr2.open("POST","http://114.115.134.119:5000/beta/getFocusedFlights",true);
+                        xhr2.open("POST","http://39.107.74.159:5000/beta/getFocusedFlights",true);
                         xhr2.setRequestHeader("Content-type","application/json");
                         xhr2.send(jsonData1);
                     }
                 }
             }
-            xhr.open("POST","http://114.115.134.119:5000/beta/getUser",true);
+            xhr.open("POST","http://39.107.74.159:5000/beta/getUser",true);
             xhr.setRequestHeader("Content-type","application/json");
             xhr.send(jsonData1);
         }
@@ -217,7 +217,7 @@
                 }
             }
         }
-        xhr.open("POST","http://114.115.134.119:5000/beta/sendEmail",true);
+        xhr.open("POST","http://39.107.74.159:5000/beta/sendEmail",true);
         xhr.setRequestHeader("Content-type","application/json");
         xhr.send(jsonData);
     }

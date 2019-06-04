@@ -888,6 +888,18 @@ canvas{
     left: 120px;
     top: -50px;
 }
+.data .wait{
+    font-size: 24px;
+    font-family: 微软雅黑;
+    position: relative;
+    left: 280px;
+    top: 150px;
+}
+.data .waitImg{
+    position: relative;
+    left: 480px;
+    top: -50px;
+}
 .data .everyFlight{
     cursor: pointer;
     position: relative;

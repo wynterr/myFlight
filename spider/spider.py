@@ -683,6 +683,7 @@ class Spider(object):
             query_url += '&fdate=%s' % str(datetime.date.today()).replace('-', '')
         self.logger.info("查询基本信息，查询条件：%s" % (args,))
         p = self._get_base_info(query_url,with_img)
+        print(p.code)
         if not p.code == 0:
             self.logger.info("查询条件：%s, 查询信息：code:%d, message:%s"%((args,),p.code,p.message))
         if return_type == 0:
